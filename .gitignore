@@ -1,0 +1,7 @@
+flock-app/node_modules/**/*
+flock-app/.expo/*
+flock-app/npm-debug.*
+
+# Editors
+.idea/
+.vscode/
