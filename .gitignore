@@ -1,6 +1,6 @@
-flock-app/node_modules/**/*
-flock-app/.expo/*
-flock-app/npm-debug.*
+node_modules/**/*
+.expo/*
+npm-debug.*
 
 # Editors
 .idea/
