@@ -3,6 +3,24 @@
   "env": {
     "development": {
       "plugins": ["transform-react-jsx-source"]
+    },
+    "production": {
+      "plugins": [
+        "react-native-paper/babel" // Reduces bundle size
+      ]
     }
-  }
+  },
+  "plugins": [
+    ["module-resolver", {
+      "alias": {
+        "@assets": "./src/assets",
+        "@fonts": "./src/assets/fonts",
+        "@components": "./src/components",
+        "@constants": "./src/constants",
+        "@navigation": "./src/navigation",
+        "@screens": "./src/screens"
+      },
+      "extensions": [".js"]
+    }]
+  ]
 }
