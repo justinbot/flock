@@ -7,16 +7,16 @@ import TabBarIcon from 'Components/TabBarIcon';
 
 export default class EventListScreen extends React.Component {
   static navigationOptions = {
-    title: 'Flock',
+    title: 'Around me',
     tabBarIcon: ({ focused, tintColor }) => (
-      <TabBarIcon name={'settings'} focused={focused} tintColor={tintColor} />
+      <TabBarIcon name={'users'} focused={focused} tintColor={tintColor} />
     ),
   };
 
   render() {
     return (
       <View style={{ flex: 1 }}>
-        <Text>Settings</Text>
+        <Text>Users around me</Text>
       </View>
     );
   }

@@ -1,6 +1,8 @@
 import React from 'react';
 import { View } from 'react-native';
-import { Text } from 'react-native-paper';
+import { Button, Text } from 'react-native-paper';
+
+import Theme from 'Constants/Theme';
 
 
 export default class LandingScreen extends React.Component {
@@ -13,9 +15,11 @@ export default class LandingScreen extends React.Component {
 
     return (
       <View style={{ flex: 1 }}>
-        <Text>Logo</Text>
-        <Text>Log in</Text>
-        <Text>Sign up</Text>
+        <View style={{ flex: 1, alignItems: 'center' }}>
+          <Text>Logo</Text>
+          <Button mode="contained" onPress={() => navigate('Register')}>Sign up</Button>
+          <Button onPress={() => navigate('Login')}>Log in</Button>
+        </View>
       </View>
     );
   }

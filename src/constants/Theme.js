@@ -2,15 +2,15 @@ import { DefaultTheme } from 'react-native-paper';
 
 export default {
   ...DefaultTheme,
-  roundness: 20,
+  roundness: 5,
   colors: {
     ...DefaultTheme.colors,
-    primary: '#ffecb3',
-    primaryDark: '#cbba83',
-    primaryLight: '#ffffe5',
-    secondary: '#7e94d3',
-    secondaryDark: '#4e66a1',
-    secondaryLight: '#b0c4ff',
+    primary: '#5aada4',
+    primaryDark: '#257d75',
+    primaryLight: '#8cdfd5',
+    secondary: '#ffecb3',
+    secondaryDark: '#cbba83',
+    secondaryLight: '#ffffe5',
     background: '#f7f7f7',
     paper: '#ffffff',
   },

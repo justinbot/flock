@@ -1,6 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
-import { Text } from 'react-native-paper';
+import { Button, Text } from 'react-native-paper';
 
 
 export default class LandingScreen extends React.Component {
@@ -13,7 +13,7 @@ export default class LandingScreen extends React.Component {
 
     return (
       <View style={{ flex: 1 }}>
-        <Text>Log in</Text>
+        <Button raised onPress={() => navigate('App')}>Log in</Button>
       </View>
     );
   }
