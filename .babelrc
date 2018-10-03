@@ -13,12 +13,12 @@
   "plugins": [
     ["module-resolver", {
       "alias": {
-        "@assets": "./src/assets",
-        "@fonts": "./src/assets/fonts",
-        "@components": "./src/components",
-        "@constants": "./src/constants",
-        "@navigation": "./src/navigation",
-        "@screens": "./src/screens"
+        "Assets": "./src/assets",
+        "Fonts": "./src/assets/fonts",
+        "Components": "./src/components",
+        "Constants": "./src/constants",
+        "Navigation": "./src/navigation",
+        "Screens": "./src/screens"
       },
       "extensions": [".js"]
     }]
