@@ -5,7 +5,7 @@ import { Text } from 'react-native-paper';
 import TabBarIcon from 'Components/TabBarIcon';
 
 
-export default class EventListScreen extends React.Component {
+export default class AroundScreen extends React.Component {
   static navigationOptions = {
     title: 'Around me',
     tabBarIcon: ({ focused, tintColor }) => (

@@ -1,5 +1,6 @@
 import React from 'react';
 import { ActivityIndicator, View } from 'react-native';
+import * as firebase from 'firebase';
 
 
 export default class LoadingScreen extends React.Component {
@@ -8,13 +9,23 @@ export default class LoadingScreen extends React.Component {
     this._bootstrapAsync();
   }
 
-  // Fetch the token from storage then navigate to our appropriate place
+  // Fetch the user login token from storage then navigate to app or auth
   _bootstrapAsync = async () => {
-    // const userToken = await AsyncStorage.getItem('userToken');
+    // Listen for auth
+    // firebase.auth().onAuthStateChanged(this._handleAuthStateChanged);
 
-    // This will switch to the App screen or Auth screen and this loading screen will be unmounted and thrown away.
     // this.props.navigation.navigate(userToken ? 'App' : 'Auth');
     this.props.navigation.navigate('Auth');
+  };
+
+  _handleAuthStateChanged = user => {
+    if (!user) {
+      try {
+        firebase.auth().signInAnonymously();
+      } catch ({message}) {
+        alert(message);
+      }
+    }
   };
 
   render() {
