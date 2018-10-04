@@ -61,6 +61,7 @@ export default class LandingScreen extends React.Component {
           label='Email'
           value={this.state.email}
           textContentType='emailAddress'
+          autoFocus
           returnKeyType='next'
           mode='outlined'
           onChangeText={email => {this.setState({ email, errorMessage: '' });}}
@@ -82,7 +83,11 @@ export default class LandingScreen extends React.Component {
           onChangeText={password => this.setState({ password, errorMessage: '' })}
           error={this.state.errorMessage}
         />
-        <Button raised onPress={this._handleLoginAsync}>Log in</Button>
+        <Button mode='contained' onPress={this._handleLoginAsync}>Log in</Button>
+        <Text>Forgot your password? TODO</Text>
+        <Text>
+          Don't have an account? <Text style={{ fontWeight: 'bold' }} onPress={() => navigate('Register')}>Sign up.</Text>
+        </Text>
       </View>
     );
   }
