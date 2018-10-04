@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "flock",
-    "description": "This project is really great.",
+    "description": "Flock is a hyper-local social media app which uses location and mutual friends to help connect people.",
     "slug": "flock",
     "privacy": "public",
     "sdkVersion": "30.0.0",
@@ -26,6 +26,14 @@
     },
     "android": {
 
+    },
+    "extra": {
+      "firebaseConfig": {
+        "apiKey": "<FIREBASE-API-KEY>",
+        "authDomain": "<FIREBASE-AUTH-DOMAIN>",
+        "databaseURL": "<FIREBASE-DATABASE-URL>",
+        "storageBucket": "<FIREBASE-STORAGE-BUCKET>",
+      }
     },
     "androidStatusBar": {
       "barStyle": "dark-content",
