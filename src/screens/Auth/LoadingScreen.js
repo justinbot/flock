@@ -9,23 +9,17 @@ export default class LoadingScreen extends React.Component {
     this._bootstrapAsync();
   }
 
-  // Fetch the user login token from storage then navigate to app or auth
   _bootstrapAsync = async () => {
-    // Listen for auth
-    // firebase.auth().onAuthStateChanged(this._handleAuthStateChanged);
-
-    // this.props.navigation.navigate(userToken ? 'App' : 'Auth');
-    this.props.navigation.navigate('Auth');
-  };
-
-  _handleAuthStateChanged = user => {
-    if (!user) {
-      try {
-        firebase.auth().signInAnonymously();
-      } catch ({message}) {
-        alert(message);
+    // Navigated based on user log in status
+    firebase.auth().onAuthStateChanged(user => {
+      if (!user) {
+        console.log('Not logged in!');
+        this.props.navigation.navigate('Auth');
+      } else {
+        console.log('Already logged in!');
+        this.props.navigation.navigate('App');
       }
-    }
+    });
   };
 
   render() {

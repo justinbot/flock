@@ -15,6 +15,7 @@ export default createStackNavigator(
     },
     Login: LoginScreen,
     Register: RegisterScreen,
+    // TODO: Onboard: OnboardScreen
   },
   {
     initialRouteName: 'Landing',
