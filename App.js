@@ -31,6 +31,8 @@ export default class App extends React.Component {
 
   componentWillMount() {
     // Initialize Firebase using configuration info
+    // TODO: Firebase fixed at 5.0.3 until back navigation issue is resolved:
+    // See: https://github.com/react-navigation/react-navigation/issues/4329
     firebase.initializeApp(Constants.manifest.extra.firebaseConfig);
   }
 

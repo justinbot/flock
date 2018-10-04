@@ -1,6 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
-import { Button, Text, TextInput } from 'react-native-paper';
+import { Button, HelperText, Text, TextInput } from 'react-native-paper';
 import * as firebase from 'firebase';
 
 
@@ -14,6 +14,7 @@ export default class LandingScreen extends React.Component {
     this.state = {
       email: '',
       password: '',
+      errorMessage: '',
     };
   }
 
@@ -35,18 +36,17 @@ export default class LandingScreen extends React.Component {
             let errorCode = error.code;
             let errorMessage = 'Login failed: ' + error.message;
 
-            // TODO
             if (errorCode === 'auth/invalid-email') {
-              errorMessage = error.message;
+              errorMessage = 'Invalid email or password.';
             } else if (errorCode === 'auth/user-disabled') {
-              errorMessage = error.message;
+              errorMessage = 'Account disabled.';
             } else if (errorCode === 'auth/user-not-found') {
-              errorMessage = error.message;
+              errorMessage = 'Invalid email or password.';
             } else if (errorCode === 'auth/wrong-password') {
-              errorMessage = error.message;
+              errorMessage = 'Invalid email or password.';
             }
 
-            alert(errorMessage);
+            this.setState({ errorMessage });
           });
       });
   };
@@ -56,20 +56,31 @@ export default class LandingScreen extends React.Component {
 
     return (
       <View style={{ flex: 1 }}>
+        <Text>Sign in to Flock</Text>
         <TextInput
           label='Email'
           value={this.state.email}
           textContentType='emailAddress'
+          returnKeyType='next'
           mode='outlined'
-          onChangeText={email => this.setState({ email })}
+          onChangeText={email => {this.setState({ email, errorMessage: '' });}}
+          error={this.state.errorMessage}
         />
+        <HelperText
+          type='error'
+          visible={this.state.errorMessage}
+        >
+          {this.state.errorMessage}
+        </HelperText>
         <TextInput
           label='Password'
           value={this.state.password}
           secureTextEntry
           textContentType='password'
+          returnKeyType='done'
           mode='outlined'
-          onChangeText={password => this.setState({ password })}
+          onChangeText={password => this.setState({ password, errorMessage: '' })}
+          error={this.state.errorMessage}
         />
         <Button raised onPress={this._handleLoginAsync}>Log in</Button>
       </View>

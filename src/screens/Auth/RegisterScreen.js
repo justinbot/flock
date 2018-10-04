@@ -1,6 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
-import { Button, Text, TextInput } from 'react-native-paper';
+import { Button, HelperText, Text, TextInput } from 'react-native-paper';
 import * as firebase from 'firebase';
 
 
@@ -14,6 +14,7 @@ export default class LandingScreen extends React.Component {
     this.state = {
       email: '',
       password: '',
+      errorMessage: '',
     };
   }
 
@@ -35,11 +36,10 @@ export default class LandingScreen extends React.Component {
             let errorCode = error.code;
             let errorMessage = 'Sign up failed: ' + error.message;
 
-            // TODO
             if (errorCode === 'auth/email-already-in-use') {
-              errorMessage = error.message;
+              errorMessage = 'Email is invalid or already taken.';
             } else if (errorCode === 'auth/invalid-email') {
-              errorMessage = error.message;
+              errorMessage = 'Email is invalid or already taken.';
             } else if (errorCode === 'auth/operation-not-allowed') {
               errorMessage = error.message;
             } else if (errorCode === 'auth/weak-password') {
@@ -61,16 +61,26 @@ export default class LandingScreen extends React.Component {
           label='Email'
           value={this.state.email}
           textContentType='emailAddress'
+          returnKeyType='next'
           mode='outlined'
-          onChangeText={email => this.setState({ email })}
+          onChangeText={email => {this.setState({ email, errorMessage: '' });}}
+          error={this.state.errorMessage}
         />
+        <HelperText
+          type='error'
+          visible={this.state.errorMessage}
+        >
+          {this.state.errorMessage}
+        </HelperText>
         <TextInput
           label='Password'
           value={this.state.password}
           secureTextEntry
           textContentType='password'
+          returnKeyType='done'
           mode='outlined'
-          onChangeText={password => this.setState({ password })}
+          onChangeText={password => this.setState({ password, errorMessage: '' })}
+          error={this.state.errorMessage}
         />
         <Button raised onPress={this._handleRegisterAsync}>Sign up for Flock</Button>
       </View>
