@@ -1,11 +1,12 @@
 import React from 'react';
 
-import { AppLoading, Asset, Constants, Font, Icon } from 'expo';
+import { AppLoading, Asset, Font, Icon } from 'expo';
 import { Feather } from '@expo/vector-icons';
 import { Platform, StatusBar, View } from 'react-native';
 import { Provider as PaperProvider } from 'react-native-paper';
 import * as firebase from 'firebase';
 
+import config from 'Constants/Config';
 import theme from 'Constants/Theme';
 import AppNavigator from 'Navigation/AppNavigator';
 
@@ -33,7 +34,7 @@ export default class App extends React.Component {
     // Initialize Firebase using configuration info
     // TODO: Firebase fixed at 5.0.3 until back navigation issue is resolved:
     // See: https://github.com/react-navigation/react-navigation/issues/4329
-    firebase.initializeApp(Constants.manifest.extra.firebaseConfig);
+    firebase.initializeApp(config.firebaseConfig);
   }
 
   render() {

@@ -25,15 +25,8 @@
       "supportsTablet": true
     },
     "android": {
-
     },
     "extra": {
-      "firebaseConfig": {
-        "apiKey": "<FIREBASE-API-KEY>",
-        "authDomain": "<FIREBASE-AUTH-DOMAIN>",
-        "databaseURL": "<FIREBASE-DATABASE-URL>",
-        "storageBucket": "<FIREBASE-STORAGE-BUCKET>",
-      }
     },
     "androidStatusBar": {
       "barStyle": "dark-content",
