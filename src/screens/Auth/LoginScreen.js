@@ -20,36 +20,35 @@ export default class LandingScreen extends React.Component {
   _handleLoginAsync = async () => {
     // TODO: reduxify
 
-    try {
-      firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-        .then(() => {
-          firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
-            .then(() => {
-              console.log('Email and password login successful!');
-              this.props.navigation.navigate('App');
-            })
-            .catch(error => {
-              let errorCode = error.code;
-              let errorMessage = 'Login failed.';
+    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+      .catch(() => {
+        // TODO: Log to error reporting
+        console.warn(error);
+      })
+      .then(() => {
+        firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
+          .then(() => {
+            console.log('Email and password login successful!');
+            this.props.navigation.navigate('App');
+          })
+          .catch(error => {
+            let errorCode = error.code;
+            let errorMessage = 'Login failed: ' + error.message;
 
-              // TODO
-              if (errorCode === 'auth/invalid-email') {
-                errorMessage = error.message;
-              } else if (errorCode === 'auth/auth/user-disabled') {
-                errorMessage = error.message;
-              } else if (errorCode === 'auth/auth/user-not-found') {
-                errorMessage = error.message;
-              } else if (errorCode === 'auth/auth/wrong-password') {
-                errorMessage = error.message;
-              }
+            // TODO
+            if (errorCode === 'auth/invalid-email') {
+              errorMessage = error.message;
+            } else if (errorCode === 'auth/user-disabled') {
+              errorMessage = error.message;
+            } else if (errorCode === 'auth/user-not-found') {
+              errorMessage = error.message;
+            } else if (errorCode === 'auth/wrong-password') {
+              errorMessage = error.message;
+            }
 
-              alert(errorMessage);
-            });
-        });
-    } catch (error) {
-      // TODO: Log to error reporting
-      console.warn(error);
-    }
+            alert(errorMessage);
+          });
+      });
   };
 
   render() {
