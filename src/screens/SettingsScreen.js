@@ -31,7 +31,7 @@ export default class SettingsScreen extends React.Component {
         <Text>Display Name: {firebase.auth().currentUser.displayName}</Text>
         <Text>Photo URL: {firebase.auth().currentUser.photoURL}</Text>
         <Text>Email: {firebase.auth().currentUser.email}</Text>
-        <Text>Email verified: {firebase.auth().currentUser.emailVerified}</Text>
+        <Text>Email verified: {firebase.auth().currentUser.emailVerified.toString()}</Text>
         <Text>Created: {firebase.auth().currentUser.metadata.creationTime}</Text>
         <Text>Last sign in: {firebase.auth().currentUser.metadata.lastSignInTime}</Text>
         <Button onPress={this._handleSignOutAsync}>Sign out</Button>
