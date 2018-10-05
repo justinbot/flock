@@ -9,8 +9,7 @@
   "private": true,
   "scripts": {
     "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "android": "cd android && ./gradlew installDevMinSdkDevKernelDebug",
     "eslint": "eslint ./src"
   },
   "eslintConfig": {
