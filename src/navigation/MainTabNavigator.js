@@ -1,10 +1,8 @@
-import React from 'react';
 import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs';
 
-import theme from 'Constants/Theme';
-import AroundScreen from 'Screens/Around/AroundScreen';
-import SettingsScreen from 'Screens/SettingsScreen';
-
+import theme from 'src/constants/Theme';
+import AroundScreen from 'src/screens/Around/AroundScreen';
+import SettingsScreen from 'src/screens/SettingsScreen';
 
 export default createMaterialBottomTabNavigator(
   {

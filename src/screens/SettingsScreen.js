@@ -3,8 +3,8 @@ import { StyleSheet, View } from 'react-native';
 import { Button, Text } from 'react-native-paper';
 import * as firebase from 'firebase';
 
-import TabBarIcon from 'Components/TabBarIcon';
-
+import { container } from 'src/styles/Common';
+import TabBarIcon from 'src/components/TabBarIcon';
 
 export default class SettingsScreen extends React.Component {
   static navigationOptions = {
@@ -16,7 +16,9 @@ export default class SettingsScreen extends React.Component {
 
   _handleSignOutAsync = async () => {
     // TODO: reduxify
-    firebase.auth().signOut()
+    firebase
+      .auth()
+      .signOut()
       .then(() => {
         this.props.navigation.navigate('Auth');
       });

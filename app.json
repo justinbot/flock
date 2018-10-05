@@ -1,11 +1,13 @@
 {
   "expo": {
     "name": "flock",
-    "description": "Flock is a hyper-local social media app which uses location and mutual friends to help connect people.",
+    "description": "This project is really great.",
     "slug": "flock",
     "privacy": "public",
     "sdkVersion": "30.0.0",
-    "platforms": ["android"],
+    "platforms": [
+      "android"
+    ],
     "version": "1.0.0",
     "orientation": "portrait",
     "primaryColor": "#ffecb3",
@@ -21,12 +23,15 @@
     "assetBundlePatterns": [
       "**/*"
     ],
-    "ios": {
-      "supportsTablet": true
+    "scheme": "flock",
+    "isDetached": true,
+    "detach": {
+      "androidExpoViewUrl": "https://s3.amazonaws.com/exp-exponent-view-code/android-v2.8.1-sdk30.0.0-271c32ab-0715-4dfb-8270-ecead3679bb4.tar.gz"
     },
     "android": {
-    },
-    "extra": {
+      "package": "com.justinbot.flock",
+      "publishBundlePath": "android/app/src/main/assets/shell-app.bundle",
+      "publishManifestPath": "android/app/src/main/assets/shell-app-manifest.json"
     },
     "androidStatusBar": {
       "barStyle": "dark-content",

@@ -6,10 +6,9 @@ import { Platform, StatusBar, View } from 'react-native';
 import { Provider as PaperProvider } from 'react-native-paper';
 import * as firebase from 'firebase';
 
-import config from 'Constants/Config';
-import theme from 'Constants/Theme';
-import AppNavigator from 'Navigation/AppNavigator';
-
+import config from 'src/constants/Config';
+import theme from 'src/constants/Theme';
+import AppNavigator from 'src/navigation/AppNavigator';
 
 function cacheImages(images) {
   return images.map(image => {
@@ -27,7 +26,7 @@ function cacheFonts(fonts) {
 
 export default class App extends React.Component {
   state = {
-    isReady: false
+    isReady: false,
   };
 
   componentWillMount() {
@@ -53,8 +52,8 @@ export default class App extends React.Component {
       return (
         <PaperProvider theme={theme}>
           <View style={{ flex: 1 }}>
-            {Platform.OS === 'ios' && <StatusBar barStyle='default'/>}
-            <AppNavigator/>
+            {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
+            <AppNavigator />
           </View>
         </PaperProvider>
       );
@@ -66,6 +65,7 @@ export default class App extends React.Component {
     // See: https://docs.expo.io/versions/latest/guides/preloading-and-caching-assets.html
 
     const imageAssets = cacheImages([
+
     ]);
 
     const fontAssets = cacheFonts([

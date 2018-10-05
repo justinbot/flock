@@ -2,7 +2,6 @@ import React from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import * as firebase from 'firebase';
 
-
 export default class LoadingScreen extends React.Component {
   constructor(props) {
     super(props);
