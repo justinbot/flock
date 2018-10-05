@@ -1,10 +1,12 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import { Button, Text } from 'react-native-paper';
+import { View } from 'react-native';
+import { Appbar, Button, Switch, Text } from 'react-native-paper';
 import { NearbyAPI } from 'react-native-nearby-api';
 
 import config from 'src/constants/Config';
+import theme from 'src/constants/Theme';
 import TabBarIcon from 'src/components/TabBarIcon';
+import UserList from 'src/components/Around/UserList';
 
 // BLE only
 const nearbyAPI = new NearbyAPI(true);
@@ -47,12 +49,14 @@ export default class AroundScreen extends React.Component {
     });
 
     nearbyAPI.onFound(message => {
+      // TODO: When a new message (user) is found, fetch their data and add to list
       console.log('Message Found!');
       console.log(message);
       this.setState({ nearbyMessage: `Message Found - ${message}` });
     });
 
     nearbyAPI.onLost(message => {
+      // TODO: When a user is lost, remove their data from list
       console.log('Message Lost!');
       console.log(message);
       this.setState({ nearbyMessage: `Message Lost - ${message}` });
@@ -118,17 +122,41 @@ export default class AroundScreen extends React.Component {
     }
   };
 
+  _onPressItem = id => {
+    console.log(id + ' pressed!');
+  };
+
   render() {
     return (
-      <View style={{ flex: 1 }}>
-        <Text>Is connected: {this.state.isConnected.toString()}</Text>
-        <Text>Nearby message: {this.state.nearbyMessage}</Text>
-        <Text>Connect text: {this.state.connectText}</Text>
-        <Text>Is publishing: {this.state.isPublishing.toString()}</Text>
-        <Text>Is subscribing: {this.state.isSubscribing.toString()}</Text>
-        <Button onPress={this._handleConnect}>
-          {this.state.isConnected ? 'DISCONNECT' : 'CONNECT'}
-        </Button>
+      <View style={{ flex: 1, flexDirection: 'column' }}>
+        <Appbar.Header
+          style={{ backgroundColor: '#ffffff' }}
+          statusBarHeight={0}
+        >
+          <Appbar.Content
+            title="Around me"
+          />
+          <Switch
+            value={true}
+            color={theme.colors.primary}
+          />
+          {/*<Appbar.Action icon="mail" onPress={() => console.log('Pressed mail')} />*/}
+          {/*<Appbar.Action icon="label" onPress={() => console.log('Pressed label')} />*/}
+          {/*<Appbar.Action icon="delete" onPress={() => console.log('Pressed delete')} />*/}
+        </Appbar.Header>
+        <View>
+          <Text>Is connected: {this.state.isConnected.toString()}</Text>
+          <Text>Nearby message: {this.state.nearbyMessage}</Text>
+          <Text>Connect text: {this.state.connectText}</Text>
+          <Text>Is publishing: {this.state.isPublishing.toString()}</Text>
+          <Text>Is subscribing: {this.state.isSubscribing.toString()}</Text>
+          <Button onPress={this._handleConnect}>
+            {this.state.isConnected ? 'DISCONNECT' : 'CONNECT'}
+          </Button>
+        </View>
+        <UserList
+          onPressItem={this._onPressItem}
+        />
       </View>
     );
   }

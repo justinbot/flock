@@ -1,9 +1,9 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Button, Text } from 'react-native-paper';
+import { Button, Divider, Headline, Surface, Text, Title } from 'react-native-paper';
 import * as firebase from 'firebase';
 
-import { container } from 'src/styles/Common';
+import CommonStyles from 'src/styles/CommonStyles';
 import TabBarIcon from 'src/components/TabBarIcon';
 
 export default class SettingsScreen extends React.Component {
@@ -28,8 +28,10 @@ export default class SettingsScreen extends React.Component {
     const { navigate } = this.props.navigation;
 
     return (
-      <View style={{ flex: 1 }}>
-        <Text>Settings</Text>
+      <Surface style={CommonStyles.container}>
+        <Headline>Settings</Headline>
+        <Divider />
+        <Title>Privacy</Title>
         <Text>Display Name: {firebase.auth().currentUser.displayName}</Text>
         <Text>Photo URL: {firebase.auth().currentUser.photoURL}</Text>
         <Text>Email: {firebase.auth().currentUser.email}</Text>
@@ -37,7 +39,7 @@ export default class SettingsScreen extends React.Component {
         <Text>Created: {firebase.auth().currentUser.metadata.creationTime}</Text>
         <Text>Last sign in: {firebase.auth().currentUser.metadata.lastSignInTime}</Text>
         <Button onPress={this._handleSignOutAsync}>Sign out</Button>
-      </View>
+      </Surface>
     );
   }
 }

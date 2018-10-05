@@ -11,8 +11,8 @@ export default {
     secondary: '#ffecb3',
     secondaryDark: '#cbba83',
     secondaryLight: '#ffffe5',
-    background: '#f7f7f7',
-    paper: '#ffffff',
+    // background: '#f6f6f6',
+    // paper: '#ffffff',
   },
   fonts: {
   },
