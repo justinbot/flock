@@ -3,8 +3,8 @@ import { StyleSheet, View } from 'react-native';
 import { Button, Text } from 'react-native-paper';
 import { NearbyAPI } from 'react-native-nearby-api';
 
-import config from 'yeet/constants/Config';
-import TabBarIcon from 'yeet/components/TabBarIcon';
+import config from 'src/constants/Config';
+import TabBarIcon from 'src/components/TabBarIcon';
 
 // BLE only
 const nearbyAPI = new NearbyAPI(true);

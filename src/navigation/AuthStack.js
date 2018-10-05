@@ -1,8 +1,8 @@
 import { createStackNavigator } from 'react-navigation';
 
-import LandingScreen from 'yeet/screens/Auth/LandingScreen';
-import LoginScreen from 'yeet/screens/Auth/LoginScreen';
-import RegisterScreen from 'yeet/screens/Auth/RegisterScreen';
+import LandingScreen from 'src/screens/Auth/LandingScreen';
+import LoginScreen from 'src/screens/Auth/LoginScreen';
+import RegisterScreen from 'src/screens/Auth/RegisterScreen';
 
 export default createStackNavigator(
   {
