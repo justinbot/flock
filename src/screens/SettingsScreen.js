@@ -5,7 +5,6 @@ import * as firebase from 'firebase';
 
 import TabBarIcon from 'yeet/components/TabBarIcon';
 
-
 export default class SettingsScreen extends React.Component {
   static navigationOptions = {
     title: 'Settings',
