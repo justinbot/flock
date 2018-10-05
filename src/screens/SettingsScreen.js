@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { Button, Text } from 'react-native-paper';
 import * as firebase from 'firebase';
 
-import TabBarIcon from 'Components/TabBarIcon';
+import TabBarIcon from 'yeet/components/TabBarIcon';
 
 
 export default class SettingsScreen extends React.Component {

@@ -6,9 +6,9 @@ import { Platform, StatusBar, View } from 'react-native';
 import { Provider as PaperProvider } from 'react-native-paper';
 import * as firebase from 'firebase';
 
-import config from 'Constants/Config';
-import theme from 'Constants/Theme';
-import AppNavigator from 'Navigation/AppNavigator';
+import config from 'yeet/constants/Config';
+import theme from 'yeet/constants/Theme';
+import AppNavigator from 'yeet/navigation/AppNavigator';
 
 
 function cacheImages(images) {

@@ -3,8 +3,8 @@ import { StyleSheet, View } from 'react-native';
 import { Button, Text } from 'react-native-paper';
 import { NearbyAPI } from 'react-native-nearby-api';
 
-import config from 'Constants/Config';
-import TabBarIcon from 'Components/TabBarIcon';
+import config from 'yeet/constants/Config';
+import TabBarIcon from 'yeet/components/TabBarIcon';
 
 
 // BLE only
