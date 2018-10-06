@@ -13,10 +13,7 @@ const nearbyAPI = new NearbyAPI(true);
 
 export default class AroundScreen extends React.Component {
   static navigationOptions = {
-    title: 'Around me',
-    tabBarIcon: ({ focused, tintColor }) => (
-      <TabBarIcon name={'users'} focused={focused} tintColor={tintColor} />
-    ),
+    header: null,
   };
 
   constructor(props) {

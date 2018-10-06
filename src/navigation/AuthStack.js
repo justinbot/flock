@@ -6,12 +6,7 @@ import RegisterScreen from 'src/screens/Auth/RegisterScreen';
 
 export default createStackNavigator(
   {
-    Landing: {
-      screen: LandingScreen,
-      navigationOptions: {
-        header: null,
-      },
-    },
+    Landing: LandingScreen,
     Login: LoginScreen,
     Register: RegisterScreen,
     // TODO: Onboard: OnboardScreen

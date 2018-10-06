@@ -14,11 +14,13 @@ export default class LandingScreen extends React.Component {
       email: '',
       password: '',
       errorMessage: '',
+      busy: false,
     };
   }
 
   _handleRegisterAsync = async () => {
     // TODO: reduxify
+    this.setState({ busy: true });
 
     firebase
       .auth()
@@ -34,7 +36,8 @@ export default class LandingScreen extends React.Component {
           .then(() => {
             console.log('Email and password registration and login successful!');
             // TODO: Navigate to onboarding for profile setup
-            this.props.navigation.navigate('App');
+            this.setState({ busy: false });
+            this.props.navigation.navigate('AppStack');
           })
           .catch(error => {
             let errorCode = error.code;
@@ -52,6 +55,7 @@ export default class LandingScreen extends React.Component {
               console.warn(error);
             }
 
+            this.setState({ busy: false });
             this.setState({ errorMessage });
           });
       });
@@ -88,7 +92,7 @@ export default class LandingScreen extends React.Component {
           onChangeText={password => this.setState({ password, errorMessage: '' })}
           error={this.state.errorMessage}
         />
-        <Button mode="contained" onPress={this._handleRegisterAsync}>
+        <Button mode="contained" loading={this.state.busy} onPress={this._handleRegisterAsync}>
           Sign up for Flock
         </Button>
         <Text>

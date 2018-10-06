@@ -13,10 +13,10 @@ export default class LoadingScreen extends React.Component {
     firebase.auth().onAuthStateChanged(user => {
       if (!user) {
         console.log('Not logged in!');
-        this.props.navigation.navigate('Auth');
+        this.props.navigation.navigate('AuthStack');
       } else {
         console.log('Already logged in!');
-        this.props.navigation.navigate('App');
+        this.props.navigation.navigate('AppStack');
       }
     });
   };

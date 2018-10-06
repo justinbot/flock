@@ -5,6 +5,7 @@ import { Button, Text } from 'react-native-paper';
 export default class LandingScreen extends React.Component {
   static navigationOptions = {
     title: 'Flock',
+    header: null,
   };
 
   render() {

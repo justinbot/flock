@@ -1,18 +1,29 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Button, Divider, Headline, Surface, Text, Title } from 'react-native-paper';
+import {
+  Button,
+  Divider,
+  Headline,
+  Paragraph,
+  RadioButton,
+  Subheading,
+  Surface,
+  Text,
+  Title,
+} from 'react-native-paper';
 import * as firebase from 'firebase';
 
-import CommonStyles from 'src/styles/CommonStyles';
-import TabBarIcon from 'src/components/TabBarIcon';
-
-export default class SettingsScreen extends React.Component {
+export default class extends React.Component {
   static navigationOptions = {
     title: 'Settings',
-    tabBarIcon: ({ focused, tintColor }) => (
-      <TabBarIcon name={'settings'} focused={focused} tintColor={tintColor} />
-    ),
   };
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      profileVisbility: 'everyone',
+    };
+  }
 
   _handleSignOutAsync = async () => {
     // TODO: reduxify
@@ -20,7 +31,7 @@ export default class SettingsScreen extends React.Component {
       .auth()
       .signOut()
       .then(() => {
-        this.props.navigation.navigate('Auth');
+        this.props.navigation.navigate('AuthStack');
       });
   };
 
@@ -28,16 +39,26 @@ export default class SettingsScreen extends React.Component {
     const { navigate } = this.props.navigation;
 
     return (
-      <Surface style={CommonStyles.container}>
+      <Surface style={{ flex: 1 }}>
         <Headline>Settings</Headline>
         <Divider />
+        <Divider />
         <Title>Privacy</Title>
-        <Text>Display Name: {firebase.auth().currentUser.displayName}</Text>
-        <Text>Photo URL: {firebase.auth().currentUser.photoURL}</Text>
-        <Text>Email: {firebase.auth().currentUser.email}</Text>
-        <Text>Email verified: {firebase.auth().currentUser.emailVerified.toString()}</Text>
-        <Text>Created: {firebase.auth().currentUser.metadata.creationTime}</Text>
-        <Text>Last sign in: {firebase.auth().currentUser.metadata.lastSignInTime}</Text>
+        <Subheading>Who can see me?</Subheading>
+        <Paragraph>You're visible to nearby Flockers only while you're using Flock.</Paragraph>
+        <RadioButton.Group
+          value={this.state.profileVisibility}
+          onValueChange={profileVisibility => this.setState({ profileVisibility })}
+        >
+          <View>
+            <Text>Everyone</Text>
+            <RadioButton value="everyone" />
+          </View>
+          <View>
+            <Text>Friends of friends</Text>
+            <RadioButton value="friends_of_friends" />
+          </View>
+        </RadioButton.Group>
         <Button onPress={this._handleSignOutAsync}>Sign out</Button>
       </Surface>
     );

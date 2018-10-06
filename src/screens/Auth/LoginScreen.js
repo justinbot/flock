@@ -14,11 +14,13 @@ export default class LandingScreen extends React.Component {
       email: '',
       password: '',
       errorMessage: '',
+      busy: false,
     };
   }
 
   _handleLoginAsync = async () => {
     // TODO: reduxify
+    this.setState({ busy: true });
 
     firebase
       .auth()
@@ -33,7 +35,8 @@ export default class LandingScreen extends React.Component {
           .signInWithEmailAndPassword(this.state.email, this.state.password)
           .then(() => {
             console.log('Email and password login successful!');
-            this.props.navigation.navigate('App');
+            this.setState({ busy: false });
+            this.props.navigation.navigate('AppStack');
           })
           .catch(error => {
             let errorCode = error.code;
@@ -53,6 +56,7 @@ export default class LandingScreen extends React.Component {
               console.warn(error);
             }
 
+            this.setState({ busy: false });
             this.setState({ errorMessage });
           });
       });
@@ -89,7 +93,7 @@ export default class LandingScreen extends React.Component {
           onChangeText={password => this.setState({ password, errorMessage: '' })}
           error={this.state.errorMessage}
         />
-        <Button mode="contained" onPress={this._handleLoginAsync}>
+        <Button mode="contained" loading={this.state.busy} onPress={this._handleLoginAsync}>
           Log in
         </Button>
         <Text>Forgot your password? TODO</Text>
