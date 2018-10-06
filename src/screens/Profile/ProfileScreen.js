@@ -1,7 +1,9 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Button, Headline, Surface, Text, Title } from 'react-native-paper';
-import * as firebase from 'firebase';
+
+import firebase from '@firebase/app';
+import 'firebase/auth';
 
 import CommonStyles from 'src/styles/CommonStyles';
 

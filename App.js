@@ -2,9 +2,11 @@ import React from 'react';
 
 import { AppLoading, Asset, Font, Icon } from 'expo';
 import { Feather } from '@expo/vector-icons';
-import { Platform, StatusBar, View } from 'react-native';
+import { Image, Platform, StatusBar, View } from 'react-native';
 import { Provider as PaperProvider } from 'react-native-paper';
-import * as firebase from 'firebase';
+
+import firebase from '@firebase/app';
+import 'firebase/auth';
 
 import config from 'src/constants/Config';
 import theme from 'src/constants/Theme';
