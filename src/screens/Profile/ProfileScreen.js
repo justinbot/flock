@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import { Button, Headline, Paragraph, Surface, Text, Title } from 'react-native-paper';
 import { Icon } from 'expo';
 
@@ -16,9 +16,25 @@ export default class extends React.Component {
 
   constructor(props) {
     super(props);
+    this.ref = firebase.firestore().collection('users');
     this.state = {
       currentUser: firebase.auth().currentUser,
+      displayName: null,
+      details: null,
+      avatarUrl: null,
     };
+  }
+
+  componentDidMount() {
+    this.ref.doc(this.state.currentUser.uid).onSnapshot(userProfile => {
+      console.log(userProfile);
+      // TODO handle error
+      this.setState({
+        displayName: userProfile.get('display_name'),
+        details: userProfile.get('details'),
+        avatarUrl: userProfile.get('avatar_url'),
+      });
+    });
   }
 
   render() {
@@ -28,6 +44,14 @@ export default class extends React.Component {
     if (this.state.currentUser) {
       content = (
         <View>
+          <Text>Display Name: {this.state.displayName}</Text>
+          <Text>Details: {this.state.details}</Text>
+          <Image
+            style={[{ width: 240, height: 240 }, CommonStyles.avatarImage]}
+            source={{ uri: this.state.avatarUrl }}
+          />
+          <Text>Avatar URL: {this.state.avatarUrl}</Text>
+
           <Text>Display Name: {this.state.currentUser.displayName}</Text>
           <Text>Photo URL: {this.state.currentUser.photoURL}</Text>
           <Text>Email: {this.state.currentUser.email}</Text>
