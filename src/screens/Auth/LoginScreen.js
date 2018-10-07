@@ -1,7 +1,9 @@
 import React from 'react';
 import { View } from 'react-native';
 import { Button, HelperText, Text, TextInput } from 'react-native-paper';
-import * as firebase from 'firebase';
+
+import firebase from 'expo-firebase-app';
+import 'expo-firebase-auth';
 
 export default class LandingScreen extends React.Component {
   static navigationOptions = {
@@ -14,47 +16,40 @@ export default class LandingScreen extends React.Component {
       email: '',
       password: '',
       errorMessage: '',
+      busy: false,
     };
   }
 
   _handleLoginAsync = async () => {
     // TODO: reduxify
+    this.setState({ busy: true });
 
     firebase
       .auth()
-      .setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-      .catch(error => {
-        // TODO: Log to error reporting
-        console.warn(error);
-      })
+      .signInWithEmailAndPassword(this.state.email, this.state.password)
       .then(() => {
-        firebase
-          .auth()
-          .signInWithEmailAndPassword(this.state.email, this.state.password)
-          .then(() => {
-            console.log('Email and password login successful!');
-            this.props.navigation.navigate('App');
-          })
-          .catch(error => {
-            let errorCode = error.code;
-            let errorMessage = error.message;
+        console.log('Email and password login successful!');
+        this.props.navigation.navigate('AppStack');
+      })
+      .catch(error => {
+        let errorCode = error.code;
+        let errorMessage = error.message;
 
-            if (errorCode === 'auth/invalid-email') {
-              errorMessage = 'Invalid email or password.';
-            } else if (errorCode === 'auth/user-disabled') {
-              errorMessage = 'Account disabled.';
-            } else if (errorCode === 'auth/user-not-found') {
-              errorMessage = 'Invalid email or password.';
-            } else if (errorCode === 'auth/wrong-password') {
-              errorMessage = 'Invalid email or password.';
-            } else {
-              errorMessage = 'An error occured during login.';
-              // TODO: Log to error reporting
-              console.warn(error);
-            }
+        if (errorCode === 'auth/invalid-email') {
+          errorMessage = 'Invalid email or password.';
+        } else if (errorCode === 'auth/user-disabled') {
+          errorMessage = 'Account disabled.';
+        } else if (errorCode === 'auth/user-not-found') {
+          errorMessage = 'Invalid email or password.';
+        } else if (errorCode === 'auth/wrong-password') {
+          errorMessage = 'Invalid email or password.';
+        } else {
+          errorMessage = 'An error occured during login.';
+          // TODO: Log to error reporting
+          console.warn(error);
+        }
 
-            this.setState({ errorMessage });
-          });
+        this.setState({ busy: false, errorMessage });
       });
   };
 
@@ -89,7 +84,7 @@ export default class LandingScreen extends React.Component {
           onChangeText={password => this.setState({ password, errorMessage: '' })}
           error={this.state.errorMessage}
         />
-        <Button mode="contained" onPress={this._handleLoginAsync}>
+        <Button mode="contained" loading={this.state.busy} onPress={this._handleLoginAsync}>
           Log in
         </Button>
         <Text>Forgot your password? TODO</Text>

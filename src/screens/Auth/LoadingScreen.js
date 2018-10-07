@@ -1,6 +1,8 @@
 import React from 'react';
 import { ActivityIndicator, View } from 'react-native';
-import * as firebase from 'firebase';
+
+import firebase from 'expo-firebase-app';
+import 'expo-firebase-auth';
 
 export default class LoadingScreen extends React.Component {
   constructor(props) {
@@ -13,10 +15,10 @@ export default class LoadingScreen extends React.Component {
     firebase.auth().onAuthStateChanged(user => {
       if (!user) {
         console.log('Not logged in!');
-        this.props.navigation.navigate('Auth');
+        this.props.navigation.navigate('AuthStack');
       } else {
         console.log('Already logged in!');
-        this.props.navigation.navigate('App');
+        this.props.navigation.navigate('AppStack');
       }
     });
   };

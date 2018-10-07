@@ -1,18 +1,30 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Button, Text } from 'react-native-paper';
-import * as firebase from 'firebase';
+import {
+  Button,
+  Card,
+  Divider,
+  Paragraph,
+  Surface,
+  Title,
+} from 'react-native-paper';
 
-import { container } from 'src/styles/Common';
-import TabBarIcon from 'src/components/TabBarIcon';
+import firebase from 'expo-firebase-app';
+import 'expo-firebase-auth';
 
-export default class SettingsScreen extends React.Component {
+import CommonStyles from 'src/styles/CommonStyles';
+
+export default class extends React.Component {
   static navigationOptions = {
     title: 'Settings',
-    tabBarIcon: ({ focused, tintColor }) => (
-      <TabBarIcon name={'settings'} focused={focused} tintColor={tintColor} />
-    ),
   };
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      profileVisbility: 'everyone',
+    };
+  }
 
   _handleSignOutAsync = async () => {
     // TODO: reduxify
@@ -20,7 +32,7 @@ export default class SettingsScreen extends React.Component {
       .auth()
       .signOut()
       .then(() => {
-        this.props.navigation.navigate('Auth');
+        this.props.navigation.navigate('AuthStack');
       });
   };
 
@@ -28,16 +40,22 @@ export default class SettingsScreen extends React.Component {
     const { navigate } = this.props.navigation;
 
     return (
-      <View style={{ flex: 1 }}>
-        <Text>Settings</Text>
-        <Text>Display Name: {firebase.auth().currentUser.displayName}</Text>
-        <Text>Photo URL: {firebase.auth().currentUser.photoURL}</Text>
-        <Text>Email: {firebase.auth().currentUser.email}</Text>
-        <Text>Email verified: {firebase.auth().currentUser.emailVerified.toString()}</Text>
-        <Text>Created: {firebase.auth().currentUser.metadata.creationTime}</Text>
-        <Text>Last sign in: {firebase.auth().currentUser.metadata.lastSignInTime}</Text>
-        <Button onPress={this._handleSignOutAsync}>Sign out</Button>
-      </View>
+      <Surface style={{ flex: 1 }}>
+        <Title>Privacy</Title>
+        <Card>
+          <Card.Content>
+            <Title>Who can see me?</Title>
+            <Paragraph>You're visible to nearby Flockers only while you're using Flock.</Paragraph>
+          </Card.Content>
+        </Card>
+        <Title>Notifications</Title>
+        <Card>
+          <Card.Content>
+            <Paragraph>TODO</Paragraph>
+          </Card.Content>
+        </Card>
+        <Button mode="outlined" onPress={this._handleSignOutAsync}>Sign out</Button>
+      </Surface>
     );
   }
 }

@@ -12,6 +12,9 @@ import java.util.List;
 import expo.core.interfaces.Package;
 import host.exp.exponent.generated.DetachBuildConstants;
 import host.exp.exponent.experience.DetachActivity;
+import expo.modules.firebase.app.FirebaseAppPackage;
+import expo.modules.firebase.auth.FirebaseAuthPackage;
+import expo.modules.firebase.firestore.FirebaseFirestorePackage;
 
 public class MainActivity extends DetachActivity {
 
@@ -38,7 +41,11 @@ public class MainActivity extends DetachActivity {
   @Override
   public List<Package> expoPackages() {
     // Here you can add your own packages.
-    return super.expoPackages();
+    return Arrays.<Package>asList(
+      new FirebaseAppPackage(), // This should be here for all Expo Firebase features.
+      new FirebaseAuthPackage(),
+      new FirebaseFirestorePackage()
+    );
   }
 
   @Override

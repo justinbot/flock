@@ -1,16 +1,34 @@
+import React from 'react';
 import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs';
 
 import theme from 'src/constants/Theme';
-import AroundScreen from 'src/screens/Around/AroundScreen';
-import SettingsScreen from 'src/screens/SettingsScreen';
+import AroundStack from 'src/navigation/AroundStack';
+import ProfileStack from 'src/navigation/ProfileStack';
+import TabBarIcon from 'src/components/TabBarIcon';
 
 export default createMaterialBottomTabNavigator(
   {
-    Around: { screen: AroundScreen },
-    Settings: { screen: SettingsScreen },
+    AroundStack: {
+      screen: AroundStack,
+      navigationOptions: {
+        title: 'Home',
+        tabBarIcon: ({ focused, tintColor }) => (
+          <TabBarIcon name={'feather'} focused={focused} tintColor={tintColor} />
+        ),
+      },
+    },
+    ProfileStack: {
+      screen: ProfileStack,
+      navigationOptions: {
+        title: 'Me',
+        tabBarIcon: ({ focused, tintColor }) => (
+          <TabBarIcon name={'user'} focused={focused} tintColor={tintColor} />
+        ),
+      },
+    },
   },
   {
-    initialRouteName: 'Around',
+    initialRouteName: 'AroundStack',
     shifting: true,
     theme,
   }

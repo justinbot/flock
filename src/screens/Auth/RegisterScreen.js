@@ -1,7 +1,9 @@
 import React from 'react';
 import { View } from 'react-native';
 import { Button, HelperText, Text, TextInput } from 'react-native-paper';
-import * as firebase from 'firebase';
+
+import firebase from 'expo-firebase-app';
+import 'expo-firebase-auth';
 
 export default class LandingScreen extends React.Component {
   static navigationOptions = {
@@ -14,46 +16,39 @@ export default class LandingScreen extends React.Component {
       email: '',
       password: '',
       errorMessage: '',
+      busy: false,
     };
   }
 
   _handleRegisterAsync = async () => {
     // TODO: reduxify
+    this.setState({ busy: true });
 
     firebase
       .auth()
-      .setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-      .catch(error => {
-        // TODO: Log to error reporting
-        console.warn(error);
+      .createUserWithEmailAndPassword(this.state.email, this.state.password)
+      .then(user => {
+        console.log('Email and password registration and login successful!');
+        // TODO: Navigate to onboarding for profile setup
+        this.props.navigation.navigate('AppStack');
       })
-      .then(() => {
-        firebase
-          .auth()
-          .createUserWithEmailAndPassword(this.state.email, this.state.password)
-          .then(() => {
-            console.log('Email and password registration and login successful!');
-            // TODO: Navigate to onboarding for profile setup
-            this.props.navigation.navigate('App');
-          })
-          .catch(error => {
-            let errorCode = error.code;
-            let errorMessage = error.message;
+      .catch(error => {
+        let errorCode = error.code;
+        let errorMessage = error.message;
 
-            if (errorCode === 'auth/email-already-in-use') {
-              errorMessage = 'Email is invalid or already taken.';
-            } else if (errorCode === 'auth/invalid-email') {
-              errorMessage = 'Email is invalid or already taken.';
-            } else if (errorCode === 'auth/weak-password') {
-              errorMessage = error.message;
-            } else {
-              errorMessage = 'An error occured during registration.';
-              // TODO: Log to error reporting
-              console.warn(error);
-            }
+        if (errorCode === 'auth/email-already-in-use') {
+          errorMessage = 'Email is invalid or already taken.';
+        } else if (errorCode === 'auth/invalid-email') {
+          errorMessage = 'Email is invalid or already taken.';
+        } else if (errorCode === 'auth/weak-password') {
+          errorMessage = error.message;
+        } else {
+          errorMessage = 'An error occured during registration.';
+          // TODO: Log to error reporting
+          console.warn(error);
+        }
 
-            this.setState({ errorMessage });
-          });
+        this.setState({ busy: false, errorMessage });
       });
   };
 
@@ -88,7 +83,7 @@ export default class LandingScreen extends React.Component {
           onChangeText={password => this.setState({ password, errorMessage: '' })}
           error={this.state.errorMessage}
         />
-        <Button mode="contained" onPress={this._handleRegisterAsync}>
+        <Button mode="contained" loading={this.state.busy} onPress={this._handleRegisterAsync}>
           Sign up for Flock
         </Button>
         <Text>

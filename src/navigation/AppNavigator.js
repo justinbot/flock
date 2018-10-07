@@ -1,14 +1,35 @@
-import { createSwitchNavigator } from 'react-navigation';
+import { createStackNavigator, createSwitchNavigator } from 'react-navigation';
 
 import LoadingScreen from 'src/screens/Auth/LoadingScreen';
+import SettingsScreen from 'src/screens/SettingsScreen';
+import ProfileEditScreen from 'src/screens/Profile/ProfileEditScreen';
+import ProfileDetailScreen from 'src/screens/Profile/ProfileDetailScreen';
 import AuthStack from 'src/navigation/AuthStack';
 import MainTabNavigator from 'src/navigation/MainTabNavigator';
 
+/* Routes to render on top of bottom tabs */
+const AppStack = createStackNavigator(
+  {
+    MainTabs: {
+      screen: MainTabNavigator,
+      navigationOptions: {
+        header: null,
+      },
+    },
+    Settings: SettingsScreen,
+    ProfileEdit: ProfileEditScreen,
+    ProfileDetail: ProfileDetailScreen,
+  },
+  {
+    initialRouteName: 'MainTabs',
+  }
+);
+
 export default createSwitchNavigator(
   {
-    App: MainTabNavigator,
-    Auth: AuthStack,
     Loading: LoadingScreen,
+    AuthStack: AuthStack,
+    AppStack: AppStack,
   },
   {
     initialRouteName: 'Loading',
