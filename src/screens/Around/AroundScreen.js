@@ -119,24 +119,17 @@ export default class AroundScreen extends React.Component {
     }
   };
 
-  _onPressItem = id => {
-    console.log(id + ' pressed!');
+  _onPressItem = userId => {
+    console.log(userId + ' pressed!');
+    this.props.navigation.navigate('ProfileDetail', { userId });
   };
 
   render() {
     return (
       <View style={{ flex: 1, flexDirection: 'column' }}>
-        <Appbar.Header
-          style={{ backgroundColor: '#ffffff' }}
-          statusBarHeight={0}
-        >
-          <Appbar.Content
-            title="Around me"
-          />
-          <Switch
-            value={true}
-            color={theme.colors.primary}
-          />
+        <Appbar.Header style={{ backgroundColor: '#ffffff' }}>
+          <Appbar.Content title="Around me" />
+          <Switch value color={theme.colors.primary} />
           {/*<Appbar.Action icon="mail" onPress={() => console.log('Pressed mail')} />*/}
           {/*<Appbar.Action icon="label" onPress={() => console.log('Pressed label')} />*/}
           {/*<Appbar.Action icon="delete" onPress={() => console.log('Pressed delete')} />*/}
@@ -151,9 +144,7 @@ export default class AroundScreen extends React.Component {
             {this.state.isConnected ? 'DISCONNECT' : 'CONNECT'}
           </Button>
         </View>
-        <UserList
-          onPressItem={this._onPressItem}
-        />
+        <UserList onPressItem={this._onPressItem} />
       </View>
     );
   }

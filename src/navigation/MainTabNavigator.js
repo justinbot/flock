@@ -11,16 +11,16 @@ export default createMaterialBottomTabNavigator(
     AroundStack: {
       screen: AroundStack,
       navigationOptions: {
-        title: 'Around me',
+        title: 'Home',
         tabBarIcon: ({ focused, tintColor }) => (
-          <TabBarIcon name={'share-2'} focused={focused} tintColor={tintColor} />
+          <TabBarIcon name={'feather'} focused={focused} tintColor={tintColor} />
         ),
       },
     },
     ProfileStack: {
       screen: ProfileStack,
       navigationOptions: {
-        title: 'Profile',
+        title: 'Me',
         tabBarIcon: ({ focused, tintColor }) => (
           <TabBarIcon name={'user'} focused={focused} tintColor={tintColor} />
         ),

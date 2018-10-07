@@ -2,18 +2,17 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import {
   Button,
+  Card,
   Divider,
-  Headline,
   Paragraph,
-  RadioButton,
-  Subheading,
   Surface,
-  Text,
   Title,
 } from 'react-native-paper';
 
 import firebase from '@firebase/app';
 import 'firebase/auth';
+
+import CommonStyles from 'src/styles/CommonStyles';
 
 export default class extends React.Component {
   static navigationOptions = {
@@ -42,26 +41,20 @@ export default class extends React.Component {
 
     return (
       <Surface style={{ flex: 1 }}>
-        <Headline>Settings</Headline>
-        <Divider />
-        <Divider />
         <Title>Privacy</Title>
-        <Subheading>Who can see me?</Subheading>
-        <Paragraph>You're visible to nearby Flockers only while you're using Flock.</Paragraph>
-        <RadioButton.Group
-          value={this.state.profileVisibility}
-          onValueChange={profileVisibility => this.setState({ profileVisibility })}
-        >
-          <View>
-            <Text>Everyone</Text>
-            <RadioButton value="everyone" />
-          </View>
-          <View>
-            <Text>Friends of friends</Text>
-            <RadioButton value="friends_of_friends" />
-          </View>
-        </RadioButton.Group>
-        <Button onPress={this._handleSignOutAsync}>Sign out</Button>
+        <Card>
+          <Card.Content>
+            <Title>Who can see me?</Title>
+            <Paragraph>You're visible to nearby Flockers only while you're using Flock.</Paragraph>
+          </Card.Content>
+        </Card>
+        <Title>Notifications</Title>
+        <Card>
+          <Card.Content>
+            <Paragraph>TODO</Paragraph>
+          </Card.Content>
+        </Card>
+        <Button mode="outlined" onPress={this._handleSignOutAsync}>Sign out</Button>
       </Surface>
     );
   }

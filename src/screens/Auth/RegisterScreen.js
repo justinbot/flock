@@ -35,10 +35,9 @@ export default class LandingScreen extends React.Component {
         firebase
           .auth()
           .createUserWithEmailAndPassword(this.state.email, this.state.password)
-          .then(() => {
+          .then(user => {
             console.log('Email and password registration and login successful!');
             // TODO: Navigate to onboarding for profile setup
-            this.setState({ busy: false });
             this.props.navigation.navigate('AppStack');
           })
           .catch(error => {
@@ -57,8 +56,7 @@ export default class LandingScreen extends React.Component {
               console.warn(error);
             }
 
-            this.setState({ busy: false });
-            this.setState({ errorMessage });
+            this.setState({ busy: false, errorMessage });
           });
       });
   };

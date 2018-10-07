@@ -2,6 +2,8 @@ import { createStackNavigator, createSwitchNavigator } from 'react-navigation';
 
 import LoadingScreen from 'src/screens/Auth/LoadingScreen';
 import SettingsScreen from 'src/screens/SettingsScreen';
+import ProfileEditScreen from 'src/screens/Profile/ProfileEditScreen';
+import ProfileDetailScreen from 'src/screens/Profile/ProfileDetailScreen';
 import AuthStack from 'src/navigation/AuthStack';
 import MainTabNavigator from 'src/navigation/MainTabNavigator';
 
@@ -15,6 +17,8 @@ const AppStack = createStackNavigator(
       },
     },
     Settings: SettingsScreen,
+    ProfileEdit: ProfileEditScreen,
+    ProfileDetail: ProfileDetailScreen,
   },
   {
     initialRouteName: 'MainTabs',

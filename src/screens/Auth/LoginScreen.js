@@ -37,7 +37,6 @@ export default class LandingScreen extends React.Component {
           .signInWithEmailAndPassword(this.state.email, this.state.password)
           .then(() => {
             console.log('Email and password login successful!');
-            this.setState({ busy: false });
             this.props.navigation.navigate('AppStack');
           })
           .catch(error => {
@@ -58,8 +57,7 @@ export default class LandingScreen extends React.Component {
               console.warn(error);
             }
 
-            this.setState({ busy: false });
-            this.setState({ errorMessage });
+            this.setState({ busy: false, errorMessage });
           });
       });
   };

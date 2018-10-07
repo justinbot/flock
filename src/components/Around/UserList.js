@@ -32,7 +32,7 @@ export default class UserList extends React.Component {
     <UserItem
       id={item.id}
       title={item.title}
-      onPressItem={this._onPressItem}
+      onPressItem={this.props.onPressItem}
     />
   );
 
