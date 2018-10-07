@@ -16,33 +16,26 @@ export default class extends React.Component {
       details: null,
       avatarUrl: null,
     };
-    this._bootstrapAsync();
   }
 
-  _bootstrapAsync = async () => {
+  componentDidMount() {
     // Get info for the specified user
     const userId = this.props.navigation.getParam('userId');
 
-    // firebase.firestore().settings({ timestampsInSnapshots: true });
-
-    // TODO Integrate react-native-firebase to fix this.
     firebase
       .firestore()
       .collection('users')
-      .doc('UWS9F656WWZCuZhSHbgs')
+      .doc(userId)
       .get()
       .then(userProfile => {
-        console.log(userProfile);
+        // TODO handle error
         this.setState({
-          displayName: userProfile.displayName,
-          details: userProfile.details,
-          avatarUrl: userProfile.avatarUrl,
+          displayName: userProfile.get('display_name'),
+          details: userProfile.get('details'),
+          avatarUrl: userProfile.get('avatar_url'),
         });
-      })
-      .catch(err => {
-        // TODO on error
       });
-  };
+  }
 
   render() {
     const { navigation } = this.props;
