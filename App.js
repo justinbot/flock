@@ -5,8 +5,7 @@ import { Feather } from '@expo/vector-icons';
 import { Image, Platform, StatusBar, View } from 'react-native';
 import { Provider as PaperProvider } from 'react-native-paper';
 
-import firebase from '@firebase/app';
-import 'firebase/auth';
+import firebase from 'expo-firebase-app';
 
 import config from 'src/constants/Config';
 import theme from 'src/constants/Theme';
@@ -35,7 +34,7 @@ export default class App extends React.Component {
     // Initialize Firebase using configuration info
     // TODO: Firebase fixed at 5.0.3 until back navigation issue is resolved:
     // See: https://github.com/react-navigation/react-navigation/issues/4329
-    firebase.initializeApp(config.firebaseConfig);
+    // firebase.initializeApp(config.firebaseConfig);
   }
 
   render() {

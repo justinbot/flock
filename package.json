@@ -24,6 +24,9 @@
   },
   "dependencies": {
     "expo": "^30.0.1",
+    "expo-firebase-app": "^1.0.0-rc.1",
+    "expo-firebase-auth": "^1.0.0-rc.1",
+    "expo-firebase-firestore": "^1.0.0-rc.1",
     "expokit": "^1.7.1",
     "firebase": "^5.5.3",
     "react": "16.3.1",

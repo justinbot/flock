@@ -12,8 +12,7 @@ import {
   Title,
 } from 'react-native-paper';
 
-import firebase from '@firebase/app';
-import 'firebase/auth';
+import firebase from 'expo-firebase-app';
 
 export default class extends React.Component {
   static navigationOptions = {

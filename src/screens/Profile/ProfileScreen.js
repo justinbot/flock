@@ -3,8 +3,8 @@ import { StyleSheet, View } from 'react-native';
 import { Button, Headline, Paragraph, Surface, Text, Title } from 'react-native-paper';
 import { Icon } from 'expo';
 
-import firebase from '@firebase/app';
-import 'firebase/auth';
+import firebase from 'expo-firebase-app';
+import 'expo-firebase-auth';
 
 import CommonStyles from 'src/styles/CommonStyles';
 import TabBarIcon from '../../components/TabBarIcon';
@@ -17,22 +17,9 @@ export default class extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentUser: null,
+      currentUser: firebase.auth().currentUser,
     };
-    this._bootstrapAsync();
   }
-
-  _bootstrapAsync = async () => {
-    // Navigated based on user log in status
-    firebase.auth().onAuthStateChanged(user => {
-      if (!user) {
-        // TODO Not logged in, redirect
-      } else {
-        console.log(user);
-        this.setState({ currentUser: user });
-      }
-    });
-  };
 
   render() {
     const { navigate } = this.props.navigation;

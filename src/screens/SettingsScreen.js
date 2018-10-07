@@ -9,8 +9,8 @@ import {
   Title,
 } from 'react-native-paper';
 
-import firebase from '@firebase/app';
-import 'firebase/auth';
+import firebase from 'expo-firebase-app';
+import 'expo-firebase-auth';
 
 import CommonStyles from 'src/styles/CommonStyles';
 

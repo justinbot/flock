@@ -99,6 +99,11 @@ apply from: 'expo.gradle'
 
 
 dependencies {
+  api project(':expo-core')
+  api project(':expo-firebase-app')
+  api project(':expo-firebase-auth')
+  api project(':expo-firebase-firestore')
+
   implementation(project(':react-native-nearby-api')) {
     transitive = false
   }

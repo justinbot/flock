@@ -1,9 +1,8 @@
 import React from 'react';
 import { Headline, Surface, Text } from 'react-native-paper';
 
-import firebase from '@firebase/app';
-import 'firebase/auth';
-import 'firebase/firestore';
+import firebase from 'expo-firebase-app';
+import 'expo-firebase-firestore';
 
 export default class extends React.Component {
   static navigationOptions = {
@@ -24,8 +23,9 @@ export default class extends React.Component {
     // Get info for the specified user
     const userId = this.props.navigation.getParam('userId');
 
-    firebase.firestore().settings({ timestampsInSnapshots: true });
+    // firebase.firestore().settings({ timestampsInSnapshots: true });
 
+    // TODO Integrate react-native-firebase to fix this.
     firebase
       .firestore()
       .collection('users')
