@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  BackHandler,
-  Image,
-  ImageEditor,
-  StyleSheet,
-  TouchableNativeFeedback,
-  View,
-} from 'react-native';
+import { BackHandler, Image, ImageEditor, StyleSheet, View } from 'react-native';
 import { ImagePicker } from 'expo';
 import {
   Button,
@@ -62,20 +55,16 @@ export default class extends React.Component {
         });
       });
 
-    // Save changes on navigate back
-    // this._willBlurSubscription = this.props.navigation.addListener('willBlur', () =>
-    //   this._onNavigateBack()
-    // );
+    // Save profile on navigate away
+    this._willBlurSubscription = this.props.navigation.addListener(
+      'willBlur',
+      this._saveProfileAsync
+    );
   }
 
-  // componentWillUnmount() {
-  //   this._willBlurSubscription && this._willBlurSubscription.remove();
-  // }
-
-  // _onNavigateBack() {
-  //   // TODO Loader while saving
-  //   this._saveProfileAsync();
-  // }
+  componentWillUnmount() {
+    this._willBlurSubscription && this._willBlurSubscription.remove();
+  }
 
   _saveProfileAsync = async () => {
     // TODO Loader while saving, save on exit or change rather than button
@@ -182,9 +171,6 @@ export default class extends React.Component {
             />
           </Card.Content>
         </Card>
-        <Button mode="contained" onPress={this._saveProfileAsync}>
-          Save changes
-        </Button>
         <Snackbar
           visible={this.state.snackbarMessage != null}
           duration={Snackbar.DURATION_SHORT}
