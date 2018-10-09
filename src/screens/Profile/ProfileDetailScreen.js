@@ -14,25 +14,28 @@ export default class extends React.Component {
 
   constructor(props) {
     super(props);
-    this.ref = firebase.firestore().collection('users');
     this.state = {
       userId: this.props.navigation.getParam('userId'),
       displayName: null,
       details: null,
-      avatarUrl: null,
+      avatarPath: null,
     };
   }
 
   componentDidMount() {
     // Get info for the specified user
-    this.ref.doc(this.state.userId).onSnapshot(userProfile => {
-      // TODO handle error
-      this.setState({
-        displayName: userProfile.get('display_name'),
-        details: userProfile.get('details'),
-        avatarUrl: userProfile.get('avatar_url'),
+    firebase
+      .firestore()
+      .collection('users')
+      .doc(this.state.userId)
+      .onSnapshot(userProfile => {
+        // TODO handle error
+        this.setState({
+          displayName: userProfile.get('display_name'),
+          details: userProfile.get('details'),
+          avatarPath: userProfile.get('avatar_path'),
+        });
       });
-    });
   }
 
   render() {
@@ -48,7 +51,7 @@ export default class extends React.Component {
         {/*TODO description*/}
         <Text>Display Name: {this.state.displayName}</Text>
         <Text>Details: {this.state.details}</Text>
-        <Text>Avatar URL: {this.state.avatarUrl}</Text>
+        <Text>Avatar Path: {this.state.avatarPath}</Text>
       </Surface>
     );
   }

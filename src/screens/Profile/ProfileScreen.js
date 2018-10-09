@@ -7,7 +7,6 @@ import firebase from 'expo-firebase-app';
 import 'expo-firebase-auth';
 
 import CommonStyles from 'src/styles/CommonStyles';
-import TabBarIcon from '../../components/TabBarIcon';
 
 export default class extends React.Component {
   static navigationOptions = {
@@ -16,25 +15,28 @@ export default class extends React.Component {
 
   constructor(props) {
     super(props);
-    this.ref = firebase.firestore().collection('users');
     this.state = {
       currentUser: firebase.auth().currentUser,
       displayName: null,
       details: null,
-      avatarUrl: null,
+      avatarPath: null,
     };
   }
 
   componentDidMount() {
-    this.ref.doc(this.state.currentUser.uid).onSnapshot(userProfile => {
-      console.log(userProfile);
-      // TODO handle error
-      this.setState({
-        displayName: userProfile.get('display_name'),
-        details: userProfile.get('details'),
-        avatarUrl: userProfile.get('avatar_url'),
+    firebase
+      .firestore()
+      .collection('users')
+      .doc(this.state.currentUser.uid)
+      .onSnapshot(userProfile => {
+        console.log(userProfile);
+        // TODO handle error
+        this.setState({
+          displayName: userProfile.get('display_name'),
+          details: userProfile.get('details'),
+          avatarPath: userProfile.get('avatar_path'),
+        });
       });
-    });
   }
 
   render() {
@@ -50,7 +52,7 @@ export default class extends React.Component {
             style={[{ width: 240, height: 240 }, CommonStyles.avatarImage]}
             source={{ uri: this.state.avatarUrl }}
           />
-          <Text>Avatar URL: {this.state.avatarUrl}</Text>
+          <Text>Avatar Path: {this.state.avatarPath}</Text>
 
           <Text>Display Name: {this.state.currentUser.displayName}</Text>
           <Text>Photo URL: {this.state.currentUser.photoURL}</Text>

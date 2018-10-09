@@ -103,6 +103,7 @@ dependencies {
   api project(':expo-firebase-app')
   api project(':expo-firebase-auth')
   api project(':expo-firebase-firestore')
+  api project(':expo-firebase-storage')
 
   implementation(project(':react-native-nearby-api')) {
     transitive = false

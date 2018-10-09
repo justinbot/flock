@@ -31,5 +31,5 @@ export default class UserItem extends React.PureComponent {
 UserItem.propTypes = {
   id: PropTypes.string,
   name: PropTypes.string,
-  avatarUrl: PropTypes.string,
+  avatarPath: PropTypes.string,
 };
