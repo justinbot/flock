@@ -1,6 +1,6 @@
 import React from 'react';
 import { Image } from 'react-native';
-import { Headline, Surface, Text } from 'react-native-paper';
+import { Headline, Paragraph, Surface } from 'react-native-paper';
 
 import firebase from 'expo-firebase-app';
 import 'expo-firebase-firestore';
@@ -18,7 +18,7 @@ export default class extends React.Component {
       userId: this.props.navigation.getParam('userId'),
       displayName: null,
       details: null,
-      avatarPath: null,
+      avatarUrl: null,
     };
   }
 
@@ -33,7 +33,7 @@ export default class extends React.Component {
         this.setState({
           displayName: userProfile.get('display_name'),
           details: userProfile.get('details'),
-          avatarPath: userProfile.get('avatar_path'),
+          avatarUrl: userProfile.get('avatar_url'),
         });
       });
   }
@@ -42,16 +42,14 @@ export default class extends React.Component {
     const { navigation } = this.props;
 
     return (
-      <Surface style={{ flex: 1 }}>
+      <Surface style={{ flex: 1, alignItems: 'center' }}>
         <Headline>Profile</Headline>
         <Image
-          style={[{ width: 300, height: 300 }, CommonStyles.avatarImage]}
+          style={[{ width: 200, height: 200 }, CommonStyles.avatarImage]}
           source={{ uri: this.state.avatarUrl }}
         />
-        {/*TODO description*/}
-        <Text>Display Name: {this.state.displayName}</Text>
-        <Text>Details: {this.state.details}</Text>
-        <Text>Avatar Path: {this.state.avatarPath}</Text>
+        <Headline>{this.state.displayName}</Headline>
+        <Paragraph>{this.state.details}</Paragraph>
       </Surface>
     );
   }

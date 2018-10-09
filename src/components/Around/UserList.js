@@ -10,7 +10,7 @@ export default class UserList extends React.Component {
 
     this.state = {
       items: [
-        { id: 'UWS9F656WWZCuZhSHbgs', title: 'Devin' },
+        { id: 'GkF10yJcLqX0QkQp0vNebKTgKWM2', title: 'Devin' },
         { id: '2', title: 'Jackson' },
         { id: '3', title: 'James' },
         { id: '4', title: 'Joel' },

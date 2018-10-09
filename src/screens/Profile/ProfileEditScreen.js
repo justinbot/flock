@@ -1,8 +1,16 @@
 import React from 'react';
-import { Image, ImageEditor, StyleSheet, View } from 'react-native';
+import {
+  BackHandler,
+  Image,
+  ImageEditor,
+  StyleSheet,
+  TouchableNativeFeedback,
+  View,
+} from 'react-native';
 import { ImagePicker } from 'expo';
 import {
   Button,
+  Card,
   Divider,
   Headline,
   Paragraph,
@@ -10,7 +18,6 @@ import {
   Snackbar,
   Subheading,
   Surface,
-  Text,
   TextInput,
   Title,
 } from 'react-native-paper';
@@ -27,6 +34,8 @@ export default class extends React.Component {
     title: 'Edit Profile',
   };
 
+  _willBlurSubscription;
+
   constructor(props) {
     super(props);
     this.state = {
@@ -34,8 +43,7 @@ export default class extends React.Component {
       snackbarMessage: null,
       displayName: null,
       details: null,
-      avatarPath: null,
-      avatarSource: null,
+      avatarUrl: null,
     };
   }
 
@@ -50,36 +58,41 @@ export default class extends React.Component {
         this.setState({
           displayName: userProfile.get('display_name'),
           details: userProfile.get('details'),
-          avatarPath: userProfile.get('avatar_path'),
+          avatarUrl: userProfile.get('avatar_url'),
         });
       });
+
+    // Save changes on navigate back
+    // this._willBlurSubscription = this.props.navigation.addListener('willBlur', () =>
+    //   this._onNavigateBack()
+    // );
   }
 
-  componentDidUpdate(prevProps) {
-    if (this.state.avatarPath !== prevProps.avatarPath) {
-      // If avatar path changed, resolve its URL
-      if (this.state.avatarPath) {
-        firebase
-          .storage()
-          .ref(this.state.avatarPath)
-          .getDownloadURL()
-          .then(url => {
-            this.setState({ avatarSource: url });
-          });
-      }
-    }
-  }
+  // componentWillUnmount() {
+  //   this._willBlurSubscription && this._willBlurSubscription.remove();
+  // }
+
+  // _onNavigateBack() {
+  //   // TODO Loader while saving
+  //   this._saveProfileAsync();
+  // }
 
   _saveProfileAsync = async () => {
+    // TODO Loader while saving, save on exit or change rather than button
     return firebase
       .firestore()
       .collection('users')
       .doc(this.state.currentUser.uid)
-      .set({
-        display_name: this.state.displayName,
-        details: this.state.details,
-        avatar_path: this.state.avatarPath,
-      });
+      .set(
+        {
+          display_name: this.state.displayName,
+          details: this.state.details,
+          avatar_url: this.state.avatarUrl,
+        },
+        {
+          merge: true,
+        }
+      );
     // TODO Handle error
   };
 
@@ -121,8 +134,8 @@ export default class extends React.Component {
       await avatarRef.putFile(resizedUri);
 
       // Get url and save it to user profile
-      await avatarRef.getDownloadURL();
-      await this.setState({ avatarPath: uploadedAvatarPath });
+      let uploadedAvatarUrl = await avatarRef.getDownloadURL();
+      await this.setState({ avatarUrl: uploadedAvatarUrl });
       await this._saveProfileAsync();
       this.setState({
         snackbarMessage: 'Uploaded avatar image',
@@ -139,34 +152,38 @@ export default class extends React.Component {
     const { navigate } = this.props.navigation;
 
     return (
-      <Surface style={{ flex: 1 }}>
+      <View style={{ flex: 1 }}>
         <Headline>TODO</Headline>
         <Divider />
         <Image
-          style={[{ width: 240, height: 240 }, CommonStyles.avatarImage]}
-          source={{ uri: this.state.avatarSource }}
+          style={[{ width: 200, height: 200 }, CommonStyles.avatarImage]}
+          source={{ uri: this.state.avatarUrl }}
         />
-        <Button mode="contained" onPress={this._uploadAvatarImageAsync}>
-          Upload Avatar Image
+        <Button mode="outlined" onPress={this._uploadAvatarImageAsync}>
+          Change avatar
         </Button>
-        <TextInput
-          label="Name"
-          mode="outlined"
-          maxLength={20}
-          value={this.state.displayName}
-          onChangeText={displayName => this.setState({ displayName })}
-        />
-        <TextInput
-          label="About you"
-          placeholder="Add some details"
-          mode="outlined"
-          multiline
-          numberOfLines={3}
-          value={this.state.details}
-          onChangeText={details => this.setState({ details })}
-        />
+        <Card>
+          <Card.Content>
+            <TextInput
+              label="Name"
+              mode="outlined"
+              maxLength={20}
+              value={this.state.displayName}
+              onChangeText={displayName => this.setState({ displayName })}
+            />
+            <TextInput
+              label="About you"
+              placeholder="Add some details"
+              mode="outlined"
+              multiline
+              numberOfLines={3}
+              value={this.state.details}
+              onChangeText={details => this.setState({ details })}
+            />
+          </Card.Content>
+        </Card>
         <Button mode="contained" onPress={this._saveProfileAsync}>
-          Save
+          Save changes
         </Button>
         <Snackbar
           visible={this.state.snackbarMessage != null}
@@ -174,7 +191,7 @@ export default class extends React.Component {
           onDismiss={() => this.setState({ snackbarMessage: null })}>
           {this.state.snackbarMessage}
         </Snackbar>
-      </Surface>
+      </View>
     );
   }
 }

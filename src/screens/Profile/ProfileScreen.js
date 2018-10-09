@@ -19,7 +19,7 @@ export default class extends React.Component {
       currentUser: firebase.auth().currentUser,
       displayName: null,
       details: null,
-      avatarPath: null,
+      avatarUrl: null,
     };
   }
 
@@ -29,12 +29,11 @@ export default class extends React.Component {
       .collection('users')
       .doc(this.state.currentUser.uid)
       .onSnapshot(userProfile => {
-        console.log(userProfile);
         // TODO handle error
         this.setState({
           displayName: userProfile.get('display_name'),
           details: userProfile.get('details'),
-          avatarPath: userProfile.get('avatar_path'),
+          avatarUrl: userProfile.get('avatar_url'),
         });
       });
   }
@@ -45,17 +44,14 @@ export default class extends React.Component {
     let content = <Text>TODO loader</Text>;
     if (this.state.currentUser) {
       content = (
-        <View>
-          <Text>Display Name: {this.state.displayName}</Text>
-          <Text>Details: {this.state.details}</Text>
+        <View style={{ alignItems: 'center' }}>
           <Image
-            style={[{ width: 240, height: 240 }, CommonStyles.avatarImage]}
+            style={[{ width: 200, height: 200 }, CommonStyles.avatarImage]}
             source={{ uri: this.state.avatarUrl }}
           />
-          <Text>Avatar Path: {this.state.avatarPath}</Text>
+          <Headline>{this.state.displayName}</Headline>
+          <Paragraph>{this.state.details}</Paragraph>
 
-          <Text>Display Name: {this.state.currentUser.displayName}</Text>
-          <Text>Photo URL: {this.state.currentUser.photoURL}</Text>
           <Text>Email: {this.state.currentUser.email}</Text>
           <Text>Email verified: {this.state.currentUser.emailVerified.toString()}</Text>
           <Text>Created: {this.state.currentUser.metadata.creationTime}</Text>
