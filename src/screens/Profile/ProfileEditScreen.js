@@ -103,10 +103,10 @@ export default class extends React.Component {
     });
 
     if (result.cancelled) {
-      console.log('Avatar selection cancelled');
       return;
     }
 
+    // Modify the image based on edits
     let resizedUri = await new Promise((resolve, reject) => {
       ImageEditor.cropImage(
         result.uri,

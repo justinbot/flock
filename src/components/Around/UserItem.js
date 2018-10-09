@@ -7,7 +7,7 @@ import CommonStyles from 'src/styles/CommonStyles';
 
 export default class UserItem extends React.PureComponent {
   _onPress = () => {
-    this.props.onPressItem(this.props.id);
+    this.props.onPressItem(this.props.userData.userId);
   };
 
   render() {
@@ -16,10 +16,10 @@ export default class UserItem extends React.PureComponent {
         <Card.Content style={{ flexDirection: 'row' }}>
           <Image
             style={[{ width: 60, height: 60}, CommonStyles.avatarImage]}
-            source={{ uri: 'https://picsum.photos/700' }}
+            source={{ uri: this.props.userData.avatarUrl }}
           />
           <View style={{ flex: 1, marginLeft: 20 }}>
-            <Title numberOfLines={1}>{this.props.title}</Title>
+            <Title numberOfLines={1}>{this.props.userData.displayName}</Title>
             <Paragraph>Card content</Paragraph>
           </View>
         </Card.Content>
@@ -27,9 +27,3 @@ export default class UserItem extends React.PureComponent {
     );
   }
 }
-
-UserItem.propTypes = {
-  id: PropTypes.string,
-  name: PropTypes.string,
-  avatarUrl: PropTypes.string,
-};
