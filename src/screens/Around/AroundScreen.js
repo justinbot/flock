@@ -1,6 +1,10 @@
 import React from 'react';
 import { View } from 'react-native';
 import { Appbar, Button, Switch, Text } from 'react-native-paper';
+
+import firebase from 'expo-firebase-app';
+import 'expo-firebase-firestore';
+
 import { NearbyAPI } from 'react-native-nearby-api';
 
 import config from 'src/constants/Config';
@@ -23,10 +27,13 @@ export default class AroundScreen extends React.Component {
       nearbyMessage: null,
       isPublishing: false,
       isSubscribing: false,
+      nearbyUserData: [],
     };
   }
 
   componentDidMount() {
+    this._fetchUserDataAsync('GkF10yJcLqX0QkQp0vNebKTgKWM2');
+
     nearbyAPI.onConnected(message => {
       console.log(message);
       nearbyAPI.isConnected((connected, error) => {
@@ -119,8 +126,23 @@ export default class AroundScreen extends React.Component {
     }
   };
 
+  _fetchUserDataAsync = async userId => {
+    let userProfile = await firebase
+      .firestore()
+      .collection('users')
+      .doc(userId)
+      .get();
+    // TODO handle error
+    let userData = {
+      userId,
+      displayName: userProfile.get('display_name'),
+      details: userProfile.get('details'),
+      avatarUrl: userProfile.get('avatar_url'),
+    };
+    this.setState({ nearbyUserData: [...this.state.nearbyUserData, userData] });
+  };
+
   _onPressItem = userId => {
-    console.log(userId + ' pressed!');
     this.props.navigation.navigate('ProfileDetail', { userId });
   };
 
@@ -144,7 +166,7 @@ export default class AroundScreen extends React.Component {
             {this.state.isConnected ? 'DISCONNECT' : 'CONNECT'}
           </Button>
         </View>
-        <UserList onPressItem={this._onPressItem} />
+        <UserList data={this.state.nearbyUserData} onPressItem={this._onPressItem} />
       </View>
     );
   }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import { Button, Headline, Paragraph, Surface, Text, Title } from 'react-native-paper';
 import { Icon } from 'expo';
 
@@ -7,7 +7,6 @@ import firebase from 'expo-firebase-app';
 import 'expo-firebase-auth';
 
 import CommonStyles from 'src/styles/CommonStyles';
-import TabBarIcon from '../../components/TabBarIcon';
 
 export default class extends React.Component {
   static navigationOptions = {
@@ -18,7 +17,25 @@ export default class extends React.Component {
     super(props);
     this.state = {
       currentUser: firebase.auth().currentUser,
+      displayName: null,
+      details: null,
+      avatarUrl: null,
     };
+  }
+
+  componentDidMount() {
+    firebase
+      .firestore()
+      .collection('users')
+      .doc(this.state.currentUser.uid)
+      .onSnapshot(userProfile => {
+        // TODO handle error
+        this.setState({
+          displayName: userProfile.get('display_name'),
+          details: userProfile.get('details'),
+          avatarUrl: userProfile.get('avatar_url'),
+        });
+      });
   }
 
   render() {
@@ -27,9 +44,14 @@ export default class extends React.Component {
     let content = <Text>TODO loader</Text>;
     if (this.state.currentUser) {
       content = (
-        <View>
-          <Text>Display Name: {this.state.currentUser.displayName}</Text>
-          <Text>Photo URL: {this.state.currentUser.photoURL}</Text>
+        <View style={{ alignItems: 'center' }}>
+          <Image
+            style={[{ width: 200, height: 200 }, CommonStyles.avatarImage]}
+            source={{ uri: this.state.avatarUrl }}
+          />
+          <Headline>{this.state.displayName}</Headline>
+          <Paragraph>{this.state.details}</Paragraph>
+
           <Text>Email: {this.state.currentUser.email}</Text>
           <Text>Email verified: {this.state.currentUser.emailVerified.toString()}</Text>
           <Text>Created: {this.state.currentUser.metadata.creationTime}</Text>

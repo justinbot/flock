@@ -15,6 +15,7 @@ import host.exp.exponent.experience.DetachActivity;
 import expo.modules.firebase.app.FirebaseAppPackage;
 import expo.modules.firebase.auth.FirebaseAuthPackage;
 import expo.modules.firebase.firestore.FirebaseFirestorePackage;
+import expo.modules.firebase.storage.FirebaseStoragePackage;
 
 public class MainActivity extends DetachActivity {
 
@@ -44,7 +45,8 @@ public class MainActivity extends DetachActivity {
     return Arrays.<Package>asList(
       new FirebaseAppPackage(), // This should be here for all Expo Firebase features.
       new FirebaseAuthPackage(),
-      new FirebaseFirestorePackage()
+      new FirebaseFirestorePackage(),
+      new FirebaseStoragePackage()
     );
   }
 

@@ -1,14 +1,15 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
+import { Constants } from 'expo';
 import {
   Button,
   Card,
   Divider,
   Paragraph,
   Surface,
+  Text,
   Title,
 } from 'react-native-paper';
-
 import firebase from 'expo-firebase-app';
 import 'expo-firebase-auth';
 
@@ -55,6 +56,8 @@ export default class extends React.Component {
           </Card.Content>
         </Card>
         <Button mode="outlined" onPress={this._handleSignOutAsync}>Sign out</Button>
+        <Divider />
+        <Text>Flock v{Constants.manifest.version}</Text>
       </Surface>
     );
   }

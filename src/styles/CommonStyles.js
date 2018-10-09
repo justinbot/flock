@@ -12,6 +12,6 @@ export default StyleSheet.create({
     marginHorizontal: 16,
   },
   avatarImage: {
-    borderRadius: 50,
+    borderRadius: 99999,
   },
 });

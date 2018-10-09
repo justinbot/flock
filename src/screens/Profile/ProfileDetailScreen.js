@@ -1,8 +1,11 @@
 import React from 'react';
-import { Headline, Surface, Text } from 'react-native-paper';
+import { Image } from 'react-native';
+import { Headline, Paragraph, Surface } from 'react-native-paper';
 
 import firebase from 'expo-firebase-app';
 import 'expo-firebase-firestore';
+
+import CommonStyles from 'src/styles/CommonStyles';
 
 export default class extends React.Component {
   static navigationOptions = {
@@ -12,6 +15,7 @@ export default class extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      userId: this.props.navigation.getParam('userId'),
       displayName: null,
       details: null,
       avatarUrl: null,
@@ -20,14 +24,11 @@ export default class extends React.Component {
 
   componentDidMount() {
     // Get info for the specified user
-    const userId = this.props.navigation.getParam('userId');
-
     firebase
       .firestore()
       .collection('users')
-      .doc(userId)
-      .get()
-      .then(userProfile => {
+      .doc(this.state.userId)
+      .onSnapshot(userProfile => {
         // TODO handle error
         this.setState({
           displayName: userProfile.get('display_name'),
@@ -41,12 +42,14 @@ export default class extends React.Component {
     const { navigation } = this.props;
 
     return (
-      <Surface style={{ flex: 1 }}>
+      <Surface style={{ flex: 1, alignItems: 'center' }}>
         <Headline>Profile</Headline>
-        {/*TODO description*/}
-        <Text>Display Name: {this.state.displayName}</Text>
-        <Text>Details: {this.state.details}</Text>
-        <Text>Avatar URL: {this.state.avatarUrl}</Text>
+        <Image
+          style={[{ width: 200, height: 200 }, CommonStyles.avatarImage]}
+          source={{ uri: this.state.avatarUrl }}
+        />
+        <Headline>{this.state.displayName}</Headline>
+        <Paragraph>{this.state.details}</Paragraph>
       </Surface>
     );
   }
