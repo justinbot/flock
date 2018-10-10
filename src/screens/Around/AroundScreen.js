@@ -9,8 +9,6 @@ import 'expo-firebase-firestore';
 import { NearbyAPI } from 'react-native-nearby-api';
 
 import theme from 'src/constants/Theme';
-import config from 'src/constants/Config';
-import TabBarIcon from 'src/components/TabBarIcon';
 import UserList from 'src/components/Around/UserList';
 
 // BLE only
@@ -30,6 +28,7 @@ export default class AroundScreen extends React.Component {
       nearbyConnected: false,
       nearbyPublishing: false,
       nearbySubscribing: false,
+      loadingUserProfile: false,
       foundUserProfiles: [],
     };
   }
@@ -47,12 +46,11 @@ export default class AroundScreen extends React.Component {
     nearbyAPI.onDisconnected(message => {
       console.log('onDisconnected: ' + message);
       nearbyAPI.unpublish();
-      nearbyAPI.unsubscribe();
+      this._unsubscribeNearby();
       this.setState({
         userVisible: false,
         nearbyConnected: false,
         nearbyPublishing: false,
-        nearbySubscribing: false,
       });
     });
 
@@ -109,19 +107,29 @@ export default class AroundScreen extends React.Component {
 
   _handleMessageFound = async userId => {
     // When a message is found, fetch user data and add to list.
-    // TODO Ignore duplicates
     if (userId === this.state.currentUser.uid) {
       // TODO discovered self
     } else {
-      let userProfile = await this._fetchUserProfileAsync(userId);
-      this.setState({ foundUserProfiles: [...this.state.foundUserProfiles, userProfile] });
+      // Ignore duplicates
+      if (!this.state.foundUserProfiles.some(e => e.userId === userId)) {
+        // Fetch user profile data
+        this.setState({ loadingUserProfile: true });
+        let userProfile = await this._fetchUserProfileAsync(userId);
+        this.setState({ loadingUserProfile: false });
+        if (userProfile.exists) {
+          this.setState({ foundUserProfiles: [...this.state.foundUserProfiles, userProfile] });
+        } else {
+          console.log('Failed to load user profile');
+          this.setState({ snackbarMessage: "Couldn't load a user profile" });
+        }
+      }
     }
   };
 
-  _handleMessageLost = message => {
-    // When a message is lost, remove user data from list.
-    let foundUserProfiles = this.state.foundUserProfiles.filter(item => {
-      return item.userId !== message;
+  _handleMessageLost = userId => {
+    // When a message is lost, remove user profile from list.
+    let foundUserProfiles = this.state.foundUserProfiles.filter(profile => {
+      return profile.id !== userId;
     });
 
     this.setState({ foundUserProfiles });
@@ -145,37 +153,53 @@ export default class AroundScreen extends React.Component {
   };
 
   _fetchUserProfileAsync = async userId => {
-    let userProfile = await firebase
-      .firestore()
-      .collection('users')
-      .doc(userId)
-      .get();
-    // TODO handle error
-    return {
-      userId,
-      displayName: userProfile.get('display_name'),
-      details: userProfile.get('details'),
-      avatarUrl: userProfile.get('avatar_url'),
-    };
+    try {
+      let userProfile = await firebase
+        .firestore()
+        .collection('users')
+        .doc(userId)
+        .get();
+      return userProfile;
+    } catch (err) {
+      // TODO Log error getting profile
+      console.warn(err);
+      return null;
+    }
   };
 
-  _onPressItem = userId => {
-    this.props.navigation.navigate('ProfileDetail', { userId });
+  _unsubscribeNearby = () => {
+    nearbyAPI.unsubscribe();
+    this.setState({
+      nearbySubscribing: false,
+      foundUserProfiles: [],
+    });
+  };
+
+  _onPressItem = userProfile => {
+    this.props.navigation.navigate('ProfileDetail', { userProfile });
+  };
+
+  _userListComponent = () => {
+    if (this.state.nearbySubscribing) {
+      return (
+        <UserList
+          data={this.state.foundUserProfiles}
+          loadingItem={this.state.loadingUserProfile}
+          onPressItem={this._onPressItem}
+        />
+      );
+    } else {
+      return (
+        <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+          <Title style={{ color: theme.colors.disabled }}>Couldn't connect :(</Title>
+          <Icon.Feather name="wifi-off" size={60} color={theme.colors.disabled} />
+          <Button onPress={() => nearbyAPI.subscribe()}>Try again!</Button>
+        </View>
+      );
+    }
   };
 
   render() {
-    let userList = (
-      <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-        <Title style={{ color: theme.colors.disabled }}>Couldn't connect :(</Title>
-        <Icon.Feather name="wifi-off" size={60} color={theme.colors.disabled} />
-        <Button onPress={() => nearbyAPI.subscribe()}>Try again!</Button>
-      </View>
-    );
-
-    if (this.state.nearbySubscribing) {
-      userList = <UserList data={this.state.foundUserProfiles} onPressItem={this._onPressItem} />;
-    }
-
     return (
       <View style={{ flex: 1, flexDirection: 'column' }}>
         <Appbar.Header style={{ backgroundColor: '#ffffff' }}>
@@ -194,7 +218,7 @@ export default class AroundScreen extends React.Component {
             onPress={() => {
               if (this.state.nearbyConnected) {
                 nearbyAPI.disconnect();
-                nearbyAPI.unsubscribe();
+                this._unsubscribeNearby();
                 nearbyAPI.unpublish();
               } else {
                 nearbyAPI.connect();
@@ -203,7 +227,7 @@ export default class AroundScreen extends React.Component {
             {this.state.nearbyConnected ? 'DISCONNECT' : 'CONNECT'}
           </Button>
         </View>
-        {userList}
+        {this._userListComponent()}
         <Snackbar
           visible={this.state.snackbarMessage != null}
           duration={Snackbar.DURATION_SHORT}

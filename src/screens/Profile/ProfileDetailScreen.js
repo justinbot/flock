@@ -15,27 +15,8 @@ export default class extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      userId: this.props.navigation.getParam('userId'),
-      displayName: null,
-      details: null,
-      avatarUrl: null,
+      userProfile: this.props.navigation.getParam('userProfile'),
     };
-  }
-
-  componentDidMount() {
-    // Get info for the specified user
-    firebase
-      .firestore()
-      .collection('users')
-      .doc(this.state.userId)
-      .onSnapshot(userProfile => {
-        // TODO handle error
-        this.setState({
-          displayName: userProfile.get('display_name'),
-          details: userProfile.get('details'),
-          avatarUrl: userProfile.get('avatar_url'),
-        });
-      });
   }
 
   render() {
@@ -46,10 +27,10 @@ export default class extends React.Component {
         <Headline>Profile</Headline>
         <Image
           style={[{ width: 200, height: 200 }, CommonStyles.avatarImage]}
-          source={{ uri: this.state.avatarUrl }}
+          source={{ uri: this.state.userProfile.get('avatar_url')}}
         />
-        <Headline>{this.state.displayName}</Headline>
-        <Paragraph>{this.state.details}</Paragraph>
+        <Headline>{this.state.userProfile.get('display_name')}</Headline>
+        <Paragraph>{this.state.userProfile.get('details')}</Paragraph>
       </Surface>
     );
   }
