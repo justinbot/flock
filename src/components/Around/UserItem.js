@@ -1,19 +1,19 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Image, StyleSheet, View } from 'react-native';
 import { Card, Paragraph, Text, Title } from 'react-native-paper';
+import * as Animatable from 'react-native-animatable';
 
 import CommonStyles from 'src/styles/CommonStyles';
 
-export default class UserItem extends React.PureComponent {
+class UserItem extends React.PureComponent {
   _onPress = () => {
     this.props.onPressItem(this.props.userProfile);
   };
 
   render() {
     return (
-      <Card onPress={this._onPress} style={CommonStyles.containerItem}>
-        <Card.Content style={{ flexDirection: 'row' }}>
+      <Card onPress={this._onPress} style={[CommonStyles.containerItem, this.props.style]}>
+        <Card.Content style={[{ flexDirection: 'row' }, this.props.style]}>
           <Image
             style={[{ width: 60, height: 60 }, CommonStyles.avatarImage]}
             source={{ uri: this.props.userProfile.get('avatar_url') }}
@@ -27,3 +27,5 @@ export default class UserItem extends React.PureComponent {
     );
   }
 }
+
+export default Animatable.createAnimatableComponent(UserItem);

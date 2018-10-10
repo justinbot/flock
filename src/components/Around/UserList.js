@@ -11,7 +11,16 @@ import CommonStyles from 'src/styles/CommonStyles';
 export default class UserList extends React.Component {
   _keyExtractor = (item, index) => item.id;
 
-  _renderItem = ({ item }) => <UserItem userProfile={item} onPressItem={this.props.onPressItem} />;
+  _renderItem = ({ item }) => (
+    // TODO Also animate remove
+    <UserItem
+      animation="fadeIn"
+      duration={150}
+      easing="ease-out"
+      userProfile={item}
+      onPressItem={this.props.onPressItem}
+    />
+  );
 
   _listFooterComponent = () => {
     if (this.props.loadingItem) {
@@ -20,7 +29,7 @@ export default class UserList extends React.Component {
           <Animatable.View
             animation="rotate"
             duration={1000}
-            easing="ease-in-out-back"
+            easing="ease-out-back"
             iterationCount="infinite">
             <Icon.Feather name="compass" size={60} color={theme.colors.disabled} />
           </Animatable.View>
@@ -31,9 +40,10 @@ export default class UserList extends React.Component {
         <View style={{ justifyContent: 'center', alignItems: 'center' }}>
           <Animatable.View
             animation="tada"
-            duration={1800}
+            duration={1600}
             easing="linear"
-            iterationCount="infinite">
+            iterationCount="infinite"
+            iterationDelay={400}>
             <Icon.Feather name="radio" size={60} color={theme.colors.disabled} />
           </Animatable.View>
         </View>
