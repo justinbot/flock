@@ -6,7 +6,7 @@ export default StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'stretch',
-    paddingTop: 22,
+    paddingVertical: 22,
   },
   containerItem: {
     marginVertical: theme.marginVertical,
