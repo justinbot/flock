@@ -19,15 +19,19 @@ export default class UserList extends React.Component {
         data={this.props.data}
         keyExtractor={this._keyExtractor}
         renderItem={this._renderItem}
-        ListEmptyComponent={() => <Headline>Nobody nearby</Headline>}
+        ListEmptyComponent={() => (
+          <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+            <Title style={{ color: theme.colors.disabled }}>Looking around...</Title>
+          </View>
+        )}
         ListFooterComponent={() => (
           <View style={{ justifyContent: 'center', alignItems: 'center' }}>
             <Animatable.View
-              animation="rotate"
-              duration={1500}
-              easing="ease-in-out-back"
+              animation="tada"
+              duration={1600}
+              easing="linear"
               iterationCount="infinite">
-              <Icon.Feather name="compass" size={60} color={theme.colors.disabled} />
+              <Icon.Feather name="radio" size={60} color={theme.colors.disabled} />
             </Animatable.View>
           </View>
         )}
