@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, View } from 'react-native';
 import {
   Button,
   Divider,
@@ -55,7 +55,7 @@ export default class extends React.Component {
       return (
         <View>
           <Image
-            style={{ width: '100%', height: 300 }}
+            style={{ width: '100%', height: 400 }}
             resizeMode="cover"
             source={{ uri: this.state.userProfile.get('avatar_url') }}
           />
@@ -79,31 +79,35 @@ export default class extends React.Component {
     const { navigate } = this.props.navigation;
 
     return (
-      <Surface style={{ flex: 1 }}>
-        {/*TODO description*/}
-        {this._userProfileContent()}
-        <Divider />
-        <Button
-          icon={({ size, color }) => (
-            <Icon.Feather name="edit" width={size} height={size} color={color} />
-          )}
-          onPress={() => navigate('ProfileEdit')}>
-          Edit info
-        </Button>
-        <Button
-          icon={({ size, color }) => (
-            <Icon.Feather name="settings" width={size} height={size} color={color} />
-          )}
-          onPress={() => navigate('Settings')}>
-          Settings
-        </Button>
-        <Snackbar
-          visible={this.state.snackbarMessage != null}
-          duration={Snackbar.DURATION_SHORT}
-          onDismiss={() => this.setState({ snackbarMessage: null })}>
-          {this.state.snackbarMessage}
-        </Snackbar>
-      </Surface>
+      <ScrollView>
+        <Surface style={{ flex: 1 }}>
+          {/*TODO description*/}
+          {this._userProfileContent()}
+          <View style={CommonStyles.containerItem}>
+            <Divider />
+            <Button
+              icon={({ size, color }) => (
+                <Icon.Feather name="edit" width={size} height={size} color={color} />
+              )}
+              onPress={() => navigate('ProfileEdit')}>
+              Edit info
+            </Button>
+            <Button
+              icon={({ size, color }) => (
+                <Icon.Feather name="settings" width={size} height={size} color={color} />
+              )}
+              onPress={() => navigate('Settings')}>
+              Settings
+            </Button>
+          </View>
+          <Snackbar
+            visible={this.state.snackbarMessage != null}
+            duration={Snackbar.DURATION_SHORT}
+            onDismiss={() => this.setState({ snackbarMessage: null })}>
+            {this.state.snackbarMessage}
+          </Snackbar>
+        </Surface>
+      </ScrollView>
     );
   }
 }

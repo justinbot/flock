@@ -1,15 +1,16 @@
 import React from 'react';
 import { Image, View } from 'react-native';
-import { Divider, Headline, Paragraph, Snackbar, Surface, Text } from 'react-native-paper';
+import { Appbar, Divider, Headline, Paragraph, Snackbar, Surface, Text } from 'react-native-paper';
 
 import firebase from 'expo-firebase-app';
 import 'expo-firebase-firestore';
 
+import theme from 'src/constants/Theme';
 import CommonStyles from 'src/styles/CommonStyles';
 
 export default class extends React.Component {
   static navigationOptions = {
-    title: 'Nearby Flocker',
+    header: null,
   };
 
   constructor(props) {
@@ -23,7 +24,7 @@ export default class extends React.Component {
     firebase
       .firestore()
       .collection('users')
-      .doc(this.props.navigation.getParam('userProfile').id)
+      .doc(this.props.navigation.getParam('userId'))
       .onSnapshot(
         userProfile => {
           if (userProfile.exists) {
@@ -49,7 +50,7 @@ export default class extends React.Component {
       return (
         <View>
           <Image
-            style={{ width: '100%', height: 300 }}
+            style={{ width: '100%', height: 400 }}
             resizeMode="cover"
             source={{ uri: this.state.userProfile.get('avatar_url') }}
           />
@@ -69,6 +70,10 @@ export default class extends React.Component {
 
     return (
       <Surface style={{ flex: 1 }}>
+        <Appbar.Header statusBarHeight={0} style={{ backgroundColor: theme.colors.surface }}>
+          <Appbar.BackAction color={theme.colors.primary} onPress={() => navigation.goBack()} />
+          <Appbar.Content title="Nearby Flocker" />
+        </Appbar.Header>
         {this._userProfileContent()}
         <Divider />
         <Snackbar

@@ -1,7 +1,17 @@
 import React from 'react';
-import { Image, ImageEditor, View } from 'react-native';
+import { Image, ImageBackground, ImageEditor, View } from 'react-native';
 import { ImagePicker } from 'expo';
-import { Appbar, Button, Card, Divider, Snackbar, Subheading, TextInput } from 'react-native-paper';
+import {
+  Appbar,
+  Button,
+  Card,
+  Divider,
+  List,
+  Snackbar,
+  Subheading,
+  Surface,
+  TextInput,
+} from 'react-native-paper';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { v4 as uuid } from 'uuid';
 
@@ -148,15 +158,19 @@ export default class extends React.Component {
     const navigation = this.props.navigation;
 
     return (
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
         <Appbar.Header statusBarHeight={0} style={{ backgroundColor: '#ffffff' }}>
           <Appbar.BackAction color={theme.colors.primary} onPress={() => navigation.goBack()} />
           <Appbar.Content title="Edit profile" />
         </Appbar.Header>
         <KeyboardAwareScrollView>
           <View style={CommonStyles.container}>
-            <Card style={[CommonStyles.containerItem, { aspectRatio: 1 }]}>
-              <Card.Cover style={{ height: '100%' }} source={{ uri: this.state.formAvatarUrl }} />
+            <Card style={[CommonStyles.containerItem, { overflow: 'hidden' }]}>
+              <Image
+                source={{ uri: this.state.formAvatarUrl }}
+                style={{ width: '100%', height: 400 }}
+                resizeMode="cover"
+              />
             </Card>
             <Button
               mode="outlined"
@@ -165,37 +179,25 @@ export default class extends React.Component {
               Change avatar
             </Button>
             <Divider />
-            <Subheading
-              style={[CommonStyles.containerItem, { fontWeight: 'bold', marginBottom: 0 }]}>
-              Name
-            </Subheading>
-            <Card style={CommonStyles.containerItem}>
-              <Card.Content>
-                <TextInput
-                  mode="outlined"
-                  maxLength={20}
-                  value={this.state.formDisplayName}
-                  onChangeText={formDisplayName => this.setState({ formDisplayName })}
-                />
-              </Card.Content>
-            </Card>
-            <Subheading
-              style={[CommonStyles.containerItem, { fontWeight: 'bold', marginBottom: 0 }]}>
-              About you
-            </Subheading>
-            <Card style={CommonStyles.containerItem}>
-              <Card.Content>
-                <TextInput
-                  placeholder="Add some details"
-                  textAlignVertical="top"
-                  mode="outlined"
-                  multiline
-                  numberOfLines={4}
-                  value={this.state.formDetails}
-                  onChangeText={formDetails => this.setState({ formDetails })}
-                />
-              </Card.Content>
-            </Card>
+            <TextInput
+              style={CommonStyles.containerItem}
+              label="Name"
+              mode="outlined"
+              maxLength={20}
+              value={this.state.formDisplayName}
+              onChangeText={formDisplayName => this.setState({ formDisplayName })}
+            />
+            <TextInput
+              style={CommonStyles.containerItem}
+              label="Details"
+              placeholder="Add some details"
+              textAlignVertical="top"
+              mode="outlined"
+              multiline
+              numberOfLines={4}
+              value={this.state.formDetails}
+              onChangeText={formDetails => this.setState({ formDetails })}
+            />
           </View>
         </KeyboardAwareScrollView>
         <Snackbar
