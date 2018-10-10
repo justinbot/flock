@@ -46,7 +46,7 @@ export default class extends React.Component {
       content = (
         <View style={{ alignItems: 'center' }}>
           <Image
-            style={[{ width: 200, height: 200 }, CommonStyles.avatarImage]}
+            style={[CommonStyles.avatarImage, { width: 200, height: 200 }]}
             source={{ uri: this.state.avatarUrl }}
           />
           <Headline>{this.state.displayName}</Headline>

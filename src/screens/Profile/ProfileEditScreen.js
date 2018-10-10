@@ -1,30 +1,20 @@
 import React from 'react';
-import { BackHandler, Image, ImageEditor, StyleSheet, View } from 'react-native';
+import { Image, ImageEditor, View } from 'react-native';
 import { ImagePicker } from 'expo';
-import {
-  Button,
-  Card,
-  Divider,
-  Headline,
-  Paragraph,
-  RadioButton,
-  Snackbar,
-  Subheading,
-  Surface,
-  TextInput,
-  Title,
-} from 'react-native-paper';
+import { Appbar, Button, Card, Snackbar, Subheading, TextInput } from 'react-native-paper';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { v4 as uuid } from 'uuid';
 
 import firebase from 'expo-firebase-app';
 import 'expo-firebase-firestore';
 import 'expo-firebase-storage';
 
+import theme from 'src/constants/Theme';
 import CommonStyles from 'src/styles/CommonStyles';
 
 export default class extends React.Component {
   static navigationOptions = {
-    title: 'Edit Profile',
+    header: null,
   };
 
   _willBlurSubscription;
@@ -138,45 +128,65 @@ export default class extends React.Component {
   };
 
   render() {
-    const { navigate } = this.props.navigation;
+    const navigation = this.props.navigation;
 
     return (
       <View style={{ flex: 1 }}>
-        <Headline>TODO</Headline>
-        <Divider />
-        <Image
-          style={[{ width: 200, height: 200 }, CommonStyles.avatarImage]}
-          source={{ uri: this.state.avatarUrl }}
-        />
-        <Button mode="outlined" onPress={this._uploadAvatarImageAsync}>
-          Change avatar
-        </Button>
-        <Card>
-          <Card.Content>
-            <TextInput
-              label="Name"
-              mode="outlined"
-              maxLength={20}
-              value={this.state.displayName}
-              onChangeText={displayName => this.setState({ displayName })}
+        <Appbar.Header statusBarHeight={0} style={{ backgroundColor: '#ffffff' }}>
+          <Appbar.BackAction color={theme.colors.primary} onPress={() => navigation.goBack()} />
+          <Appbar.Content title="Edit profile" />
+          {/*<Appbar.Action icon="more-vert" onPress={this._onMore} />*/}
+        </Appbar.Header>
+        <KeyboardAwareScrollView>
+          <View style={CommonStyles.container}>
+            <Image
+              style={[
+                CommonStyles.containerItem,
+                CommonStyles.avatarImage,
+                { width: 200, height: 200, alignSelf: 'center' },
+              ]}
+              source={{ uri: this.state.avatarUrl }}
             />
-            <TextInput
-              label="About you"
-              placeholder="Add some details"
+            <Button
               mode="outlined"
-              multiline
-              numberOfLines={3}
-              value={this.state.details}
-              onChangeText={details => this.setState({ details })}
-            />
-          </Card.Content>
-        </Card>
-        <Snackbar
-          visible={this.state.snackbarMessage != null}
-          duration={Snackbar.DURATION_SHORT}
-          onDismiss={() => this.setState({ snackbarMessage: null })}>
-          {this.state.snackbarMessage}
-        </Snackbar>
+              style={CommonStyles.containerItem}
+              onPress={this._uploadAvatarImageAsync}>
+              Change avatar
+            </Button>
+            <Subheading style={[CommonStyles.containerItem, { fontWeight: 'bold', marginBottom: 0 }]}>Name</Subheading>
+            <Card style={CommonStyles.containerItem}>
+              <Card.Content>
+                <TextInput
+                  // label="Name"
+                  mode="outlined"
+                  maxLength={20}
+                  value={this.state.displayName}
+                  onChangeText={displayName => this.setState({ displayName })}
+                />
+              </Card.Content>
+            </Card>
+            <Subheading style={[CommonStyles.containerItem, { fontWeight: 'bold', marginBottom: 0 }]}>About you</Subheading>
+            <Card style={CommonStyles.containerItem}>
+              <Card.Content>
+                <TextInput
+                  // label="About you"
+                  placeholder="Add some details"
+                  mode="outlined"
+                  multiline
+                  numberOfLines={4}
+                  value={this.state.details}
+                  onChangeText={details => this.setState({ details })}
+                />
+              </Card.Content>
+            </Card>
+            <Snackbar
+              visible={this.state.snackbarMessage != null}
+              duration={Snackbar.DURATION_SHORT}
+              onDismiss={() => this.setState({ snackbarMessage: null })}>
+              {this.state.snackbarMessage}
+            </Snackbar>
+          </View>
+        </KeyboardAwareScrollView>
       </View>
     );
   }

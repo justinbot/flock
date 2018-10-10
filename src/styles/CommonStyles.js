@@ -1,15 +1,16 @@
 import { StyleSheet } from 'react-native';
 
+import theme from 'src/constants/Theme';
+
 export default StyleSheet.create({
   container: {
     flex: 1,
+    alignItems: 'stretch',
     paddingTop: 22,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
   },
   containerItem: {
-    marginVertical: 12,
-    marginHorizontal: 16,
+    marginVertical: theme.marginVertical,
+    marginHorizontal: theme.marginHorizontal,
   },
   avatarImage: {
     borderRadius: 99999,

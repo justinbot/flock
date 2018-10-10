@@ -26,7 +26,7 @@ export default class extends React.Component {
       <Surface style={{ flex: 1, alignItems: 'center' }}>
         <Headline>Profile</Headline>
         <Image
-          style={[{ width: 200, height: 200 }, CommonStyles.avatarImage]}
+          style={[CommonStyles.avatarImage, { width: 200, height: 200 }]}
           source={{ uri: this.state.userProfile.get('avatar_url')}}
         />
         <Headline>{this.state.userProfile.get('display_name')}</Headline>
