@@ -2,6 +2,7 @@ package host.exp.exponent;
 
 
 import com.facebook.react.ReactPackage;
+import com.facebook.soloader.SoLoader;
 
 import java.util.Arrays;
 import java.util.List;
@@ -13,6 +14,13 @@ import expolib_v1.okhttp3.OkHttpClient;
 import com.badfeatures.nearby.RNNearbyApiPackage;
 
 public class MainApplication extends ExpoApplication {
+
+  @Override
+  public void onCreate() {
+    super.onCreate();
+    // Include for Background tasks
+    SoLoader.init(this, /* native exopackage */ false); // <-- Check this line exists within the block
+  }
 
   @Override
   public boolean isDebug() {

@@ -10,12 +10,13 @@ import java.util.Collections;
 import java.util.List;
 
 import expo.core.interfaces.Package;
-import host.exp.exponent.generated.DetachBuildConstants;
-import host.exp.exponent.experience.DetachActivity;
 import expo.modules.firebase.app.FirebaseAppPackage;
 import expo.modules.firebase.auth.FirebaseAuthPackage;
 import expo.modules.firebase.firestore.FirebaseFirestorePackage;
 import expo.modules.firebase.storage.FirebaseStoragePackage;
+
+import host.exp.exponent.generated.DetachBuildConstants;
+import host.exp.exponent.experience.DetachActivity;
 
 public class MainActivity extends DetachActivity {
 
@@ -43,7 +44,7 @@ public class MainActivity extends DetachActivity {
   public List<Package> expoPackages() {
     // Here you can add your own packages.
     return Arrays.<Package>asList(
-      new FirebaseAppPackage(), // This should be here for all Expo Firebase features.
+      new FirebaseAppPackage(),
       new FirebaseAuthPackage(),
       new FirebaseFirestorePackage(),
       new FirebaseStoragePackage()

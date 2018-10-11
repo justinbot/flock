@@ -1,13 +1,19 @@
 include ':app'
+
 include ':expo-core'
 project(':expo-core').projectDir = new File(rootProject.projectDir, '../node_modules/expo-core/android')
+
 include ':expo-firebase-app'
 project(':expo-firebase-app').projectDir = new File(rootProject.projectDir, '../node_modules/expo-firebase-app/android')
+
 include ':expo-firebase-auth'
 project(':expo-firebase-auth').projectDir = new File(rootProject.projectDir, '../node_modules/expo-firebase-auth/android')
+
 include ':expo-firebase-firestore'
 project(':expo-firebase-firestore').projectDir = new File(rootProject.projectDir, '../node_modules/expo-firebase-firestore/android')
+
 include ':expo-firebase-storage'
 project(':expo-firebase-storage').projectDir = new File(rootProject.projectDir, '../node_modules/expo-firebase-storage/android')
+
 include ':react-native-nearby-api'
 project(':react-native-nearby-api').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-nearby-api/android')
