@@ -1,5 +1,7 @@
 import { Animated, Easing } from 'react-native';
 
+export const materialStandardEasing = Easing.bezier(0.4, 0.0, 0.2, 1);
+
 export const animationDefinitions = {
   cardEnter: {
     from: {
@@ -16,7 +18,7 @@ export const animationDefinitions = {
 export const transitionConfig = {
   duration: 300,
   // Standard easing from https://material.io/design/motion/speed.html#easing
-  easing: Easing.bezier(0.4, 0.0, 0.2, 1),
+  easing: materialStandardEasing,
   timing: Animated.timing,
   useNativeDriver: true,
 };
