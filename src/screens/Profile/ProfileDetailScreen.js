@@ -78,10 +78,14 @@ export default class extends React.Component {
 
     return (
       <Surface style={{ flex: 1 }}>
-        <Appbar.Header statusBarHeight={0} style={{ backgroundColor: theme.colors.surface }}>
-          <Appbar.BackAction color={theme.colors.primary} onPress={() => navigation.goBack()} />
-          <Appbar.Content title="Nearby Flocker" />
-        </Appbar.Header>
+        <Transition appear="top" disappear="top">
+          <View>
+            <Appbar.Header statusBarHeight={0} style={{ backgroundColor: theme.colors.surface }}>
+              <Appbar.BackAction color={theme.colors.primary} onPress={() => navigation.goBack()} />
+              <Appbar.Content title="Nearby Flocker" />
+            </Appbar.Header>
+          </View>
+        </Transition>
         {this._userProfileContent()}
         <Divider />
         <Snackbar

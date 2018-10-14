@@ -1,13 +1,14 @@
 import React from 'react';
-
 import { AppLoading, Asset, Font, Icon } from 'expo';
 import { Feather } from '@expo/vector-icons';
 import { Image, Platform, StatusBar, View } from 'react-native';
 import { Provider as PaperProvider } from 'react-native-paper';
+import * as Animatable from 'react-native-animatable';
 
 import firebase from 'expo-firebase-app';
 
 import config from 'src/constants/Config';
+import { animationDefinitions } from 'src/constants/Transitions';
 import theme from 'src/constants/Theme';
 import AppNavigator from 'src/navigation/AppNavigator';
 
@@ -35,6 +36,7 @@ export default class App extends React.Component {
     // TODO: Firebase fixed at 5.0.3 until back navigation issue is resolved:
     // See: https://github.com/react-navigation/react-navigation/issues/4329
     // firebase.initializeApp(config.firebaseConfig);
+    Animatable.initializeRegistryWithDefinitions(animationDefinitions);
   }
 
   render() {
@@ -52,10 +54,10 @@ export default class App extends React.Component {
       // Display app
       return (
         <PaperProvider theme={theme}>
-          <View style={{ flex: 1 }}>
-            {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
+          {/*<View style={{ flex: 1 }}>*/}
+            {/*{Platform.OS === 'ios' && <StatusBar barStyle="default" />}*/}
             <AppNavigator />
-          </View>
+          {/*</View>*/}
         </PaperProvider>
       );
     }
