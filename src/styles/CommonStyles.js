@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { PixelRatio, StyleSheet } from 'react-native';
 
 import theme from 'src/constants/Theme';
 
@@ -11,8 +11,5 @@ export default StyleSheet.create({
   containerItem: {
     marginVertical: theme.marginVertical,
     marginHorizontal: theme.marginHorizontal,
-  },
-  avatarImage: {
-    borderRadius: 99999,
   },
 });

@@ -37,6 +37,7 @@
     "react-native-nearby-api": "0.0.5",
     "react-native-paper": "^2.1.0",
     "react-navigation": "^2.17.0",
+    "react-navigation-fluid-transitions": "^0.2.72",
     "react-navigation-material-bottom-tabs": "^0.4.0",
     "uuid": "^3.3.2"
   }

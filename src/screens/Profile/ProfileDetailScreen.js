@@ -1,6 +1,7 @@
 import React from 'react';
 import { Image, View } from 'react-native';
 import { Appbar, Divider, Headline, Paragraph, Snackbar, Surface, Text } from 'react-native-paper';
+import { Transition } from 'react-navigation-fluid-transitions';
 
 import firebase from 'expo-firebase-app';
 import 'expo-firebase-firestore';
@@ -16,7 +17,7 @@ export default class extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      userProfile: null,
+      userProfile: this.props.navigation.getParam('userProfile'),
     };
   }
 
@@ -24,7 +25,7 @@ export default class extends React.Component {
     firebase
       .firestore()
       .collection('users')
-      .doc(this.props.navigation.getParam('userId'))
+      .doc(this.state.userProfile.id)
       .onSnapshot(
         userProfile => {
           if (userProfile.exists) {
@@ -49,19 +50,26 @@ export default class extends React.Component {
     if (this.state.userProfile) {
       return (
         <View>
-          <Image
-            style={{ width: '100%', height: 400 }}
-            resizeMode="cover"
-            source={{ uri: this.state.userProfile.get('avatar_url') }}
-          />
+          <Transition shared={'avatarImage' + this.state.userProfile.id} appear="scale">
+            <Image
+              style={{ width: '100%', height: 400, borderRadius: 0 }}
+              resizeMode="cover"
+              source={{ uri: this.state.userProfile.get('avatar_url') }}
+            />
+          </Transition>
           <View style={CommonStyles.containerItem}>
-            <Headline>{this.state.userProfile.get('display_name')}</Headline>
-            <Paragraph>{this.state.userProfile.get('details')}</Paragraph>
+            <Transition shared={'displayName' + this.state.userProfile.id}>
+              <Headline>{this.state.userProfile.get('display_name')}</Headline>
+            </Transition>
+            <Transition shared={'details' + this.state.userProfile.id}>
+              <Paragraph>{this.state.userProfile.get('details')}</Paragraph>
+            </Transition>
           </View>
         </View>
       );
     } else {
-      return <Text>TODO loader</Text>;
+      console.log('missing profile for details');
+      return <Text>TODO missing profile</Text>;
     }
   };
 
