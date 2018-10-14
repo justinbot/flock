@@ -1,15 +1,14 @@
 import React from 'react';
 import { View } from 'react-native';
-import { Appbar, Button, Switch, Text } from 'react-native-paper';
+import { Icon } from 'expo';
+import { Appbar, Button, Snackbar, Switch, Text, Title } from 'react-native-paper';
 
 import firebase from 'expo-firebase-app';
 import 'expo-firebase-firestore';
 
 import { NearbyAPI } from 'react-native-nearby-api';
 
-import config from 'src/constants/Config';
 import theme from 'src/constants/Theme';
-import TabBarIcon from 'src/components/TabBarIcon';
 import UserList from 'src/components/Around/UserList';
 
 // BLE only
@@ -23,127 +22,181 @@ export default class AroundScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      isConnected: false,
-      nearbyMessage: null,
-      isPublishing: false,
-      isSubscribing: false,
-      nearbyUserData: [],
+      currentUser: firebase.auth().currentUser,
+      snackbarMessage: null,
+      userVisible: false,
+      nearbyConnected: false,
+      nearbyPublishing: false,
+      nearbySubscribing: false,
+      loadingUserProfile: false,
+      foundUserProfiles: [],
     };
   }
 
   componentDidMount() {
-    this._fetchUserDataAsync('GkF10yJcLqX0QkQp0vNebKTgKWM2');
-
     nearbyAPI.onConnected(message => {
-      console.log(message);
-      nearbyAPI.isConnected((connected, error) => {
-        this.setState({
-          nearbyMessage: `Connected - ${message}`,
-          isConnected: connected,
-        });
+      console.log('onConnected: ' + message);
+      this.setState({
+        nearbyConnected: true,
       });
+      // Subscribe once we are connected
+      nearbyAPI.subscribe();
     });
 
     nearbyAPI.onDisconnected(message => {
-      console.log(message);
+      console.log('onDisconnected: ' + message);
+      nearbyAPI.unpublish();
+      this._unsubscribeNearby();
       this.setState({
-        isConnected: false,
-        nearbyMessage: `Disconnected - ${message}`,
+        userVisible: false,
+        nearbyConnected: false,
+        nearbyPublishing: false,
       });
-    });
-
-    nearbyAPI.onFound(message => {
-      // TODO: When a new message (user) is found, fetch their data and add to list
-      console.log('Message Found!');
-      console.log(message);
-      this.setState({ nearbyMessage: `Message Found - ${message}` });
-    });
-
-    nearbyAPI.onLost(message => {
-      // TODO: When a user is lost, remove their data from list
-      console.log('Message Lost!');
-      console.log(message);
-      this.setState({ nearbyMessage: `Message Lost - ${message}` });
     });
 
     nearbyAPI.onDistanceChanged((message, value) => {
-      console.log('Distance Changed!');
-      console.log(message, value);
-      this.setState({
-        nearbyMessage: `Distance Changed - ${message} - ${value}`,
-      });
+      console.log('onDistanceChanged: ' + message + ' ' + value);
     });
 
     nearbyAPI.onPublishSuccess(message => {
-      nearbyAPI.isPublishing((status, error) => {
-        this.setState({
-          nearbyMessage: `Publish Success - ${message}`,
-          isPublishing: status,
-        });
+      console.log('onPublishSuccess: ' + message);
+      // this._handlePublishing();
+      this.setState({
+        nearbyPublishing: true,
       });
     });
 
     nearbyAPI.onPublishFailed(message => {
-      console.log(message);
-      nearbyAPI.isPublishing((status, error) => {
-        this.setState({
-          nearbyMessage: `Publish Failed - ${message}`,
-          isPublishing: status,
-        });
+      console.log('onPublishFailed: ' + message);
+      this.setState({
+        userVisible: false,
+        nearbyPublishing: false,
+        snackbarMessage: "Couldn't make profile visible",
       });
     });
 
-    nearbyAPI.onSubscribeSuccess(() => {
-      nearbyAPI.isSubscribing((status, error) => {
-        this.setState({
-          nearbyMessage: `Subscribe Success`,
-          isSubscribing: status,
-        });
+    nearbyAPI.onSubscribeSuccess(message => {
+      console.log('onSubscribeSuccess: ' + message);
+      this.setState({
+        nearbySubscribing: true,
       });
     });
 
-    nearbyAPI.onSubscribeFailed(() => {
-      nearbyAPI.isSubscribing((status, error) => {
-        this.setState({
-          nearbyMessage: `Subscribe Failed`,
-          isSubscribing: status,
-        });
+    nearbyAPI.onSubscribeFailed(message => {
+      console.log('onSubscribeFailed: ' + message);
+      this.setState({
+        nearbySubscribing: false,
+        snackbarMessage: "Couldn't look for nearby users",
       });
     });
+
+    nearbyAPI.onFound(message => {
+      console.log('Found message: ' + message);
+      this._handleMessageFound(message);
+    });
+
+    nearbyAPI.onLost(message => {
+      console.log('Lost message: ' + message);
+      this._handleMessageLost(message);
+    });
+
+    // Connect to Nearby
+    // API key is taken from manifest
+    nearbyAPI.connect();
   }
 
-  _handleConnect = () => {
-    if (this.state.isConnected) {
-      nearbyAPI.disconnect();
-      nearbyAPI.isConnected((connected, error) => {
-        this.setState({
-          nearbyMessage: 'Disconnected',
-          isConnected: connected,
-        });
-      });
+  _handleMessageFound = async userId => {
+    // When a message is found, fetch user data and add to list.
+    if (userId === this.state.currentUser.uid) {
+      // TODO discovered self
     } else {
-      nearbyAPI.connect(config.nearbyConfig.apiKey);
+      // Ignore duplicates
+      if (!this.state.foundUserProfiles.some(e => e.userId === userId)) {
+        // Fetch user profile data
+        this.setState({ loadingUserProfile: true });
+        let userProfile = await this._fetchUserProfileAsync(userId);
+        this.setState({ loadingUserProfile: false });
+        if (userProfile.exists) {
+          this.setState({ foundUserProfiles: [...this.state.foundUserProfiles, userProfile] });
+        } else {
+          console.log('Failed to load user profile');
+          this.setState({ snackbarMessage: "Couldn't load a user profile" });
+        }
+      }
     }
   };
 
-  _fetchUserDataAsync = async userId => {
-    let userProfile = await firebase
-      .firestore()
-      .collection('users')
-      .doc(userId)
-      .get();
-    // TODO handle error
-    let userData = {
-      userId,
-      displayName: userProfile.get('display_name'),
-      details: userProfile.get('details'),
-      avatarUrl: userProfile.get('avatar_url'),
-    };
-    this.setState({ nearbyUserData: [...this.state.nearbyUserData, userData] });
+  _handleMessageLost = userId => {
+    // When a message is lost, remove user profile from list.
+    let foundUserProfiles = this.state.foundUserProfiles.filter(profile => {
+      return profile.id !== userId;
+    });
+
+    this.setState({ foundUserProfiles });
   };
 
-  _onPressItem = userId => {
-    this.props.navigation.navigate('ProfileDetail', { userId });
+  _handleUserVisible = () => {
+    if (this.state.userVisible) {
+      // User does not want to be visible
+      nearbyAPI.unpublish();
+      this.setState({
+        userVisible: false,
+        nearbyPublishing: false,
+      });
+    } else {
+      // User wants to be visible
+      nearbyAPI.publish(this.state.currentUser.uid);
+      this.setState({
+        userVisible: true,
+      });
+    }
+  };
+
+  _fetchUserProfileAsync = async userId => {
+    try {
+      let userProfile = await firebase
+        .firestore()
+        .collection('users')
+        .doc(userId)
+        .get();
+      return userProfile;
+    } catch (err) {
+      // TODO Log error getting profile
+      console.warn(err);
+      return null;
+    }
+  };
+
+  _unsubscribeNearby = () => {
+    nearbyAPI.unsubscribe();
+    this.setState({
+      nearbySubscribing: false,
+      foundUserProfiles: [],
+    });
+  };
+
+  _onPressItem = userProfile => {
+    this.props.navigation.navigate('ProfileDetail', { userProfile });
+  };
+
+  _userListComponent = () => {
+    if (this.state.nearbySubscribing) {
+      return (
+        <UserList
+          data={this.state.foundUserProfiles}
+          loadingItem={this.state.loadingUserProfile}
+          onPressItem={this._onPressItem}
+        />
+      );
+    } else {
+      return (
+        <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+          <Title style={{ color: theme.colors.disabled }}>Couldn't connect :(</Title>
+          <Icon.Feather name="wifi-off" size={60} color={theme.colors.disabled} />
+          <Button onPress={() => nearbyAPI.subscribe()}>Try again!</Button>
+        </View>
+      );
+    }
   };
 
   render() {
@@ -151,22 +204,36 @@ export default class AroundScreen extends React.Component {
       <View style={{ flex: 1, flexDirection: 'column' }}>
         <Appbar.Header style={{ backgroundColor: '#ffffff' }}>
           <Appbar.Content title="Around me" />
-          <Switch value color={theme.colors.primary} />
-          {/*<Appbar.Action icon="mail" onPress={() => console.log('Pressed mail')} />*/}
-          {/*<Appbar.Action icon="label" onPress={() => console.log('Pressed label')} />*/}
-          {/*<Appbar.Action icon="delete" onPress={() => console.log('Pressed delete')} />*/}
+          <Switch
+            value={this.state.userVisible}
+            disabled={!this.state.nearbyConnected}
+            onValueChange={this._handleUserVisible}
+          />
         </Appbar.Header>
         <View>
-          <Text>Is connected: {this.state.isConnected.toString()}</Text>
-          <Text>Nearby message: {this.state.nearbyMessage}</Text>
-          <Text>Connect text: {this.state.connectText}</Text>
-          <Text>Is publishing: {this.state.isPublishing.toString()}</Text>
-          <Text>Is subscribing: {this.state.isSubscribing.toString()}</Text>
-          <Button onPress={this._handleConnect}>
-            {this.state.isConnected ? 'DISCONNECT' : 'CONNECT'}
+          <Text>Nearby connected: {this.state.nearbyConnected.toString()}</Text>
+          <Text>Nearby publishing: {this.state.nearbyPublishing.toString()}</Text>
+          <Text>Nearby subscribing: {this.state.nearbySubscribing.toString()}</Text>
+          <Button
+            onPress={() => {
+              if (this.state.nearbyConnected) {
+                nearbyAPI.disconnect();
+                this._unsubscribeNearby();
+                nearbyAPI.unpublish();
+              } else {
+                nearbyAPI.connect();
+              }
+            }}>
+            {this.state.nearbyConnected ? 'DISCONNECT' : 'CONNECT'}
           </Button>
         </View>
-        <UserList data={this.state.nearbyUserData} onPressItem={this._onPressItem} />
+        {this._userListComponent()}
+        <Snackbar
+          visible={this.state.snackbarMessage != null}
+          duration={Snackbar.DURATION_SHORT}
+          onDismiss={() => this.setState({ snackbarMessage: null })}>
+          {this.state.snackbarMessage}
+        </Snackbar>
       </View>
     );
   }
