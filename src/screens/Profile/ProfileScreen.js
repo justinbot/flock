@@ -1,5 +1,6 @@
 import React from 'react';
 import { Image, ScrollView, StyleSheet, View } from 'react-native';
+import { Icon } from 'expo';
 import {
   Button,
   Divider,
@@ -10,7 +11,7 @@ import {
   Text,
   Title,
 } from 'react-native-paper';
-import { Icon } from 'expo';
+import { Transition } from 'react-navigation-fluid-transitions';
 
 import firebase from 'expo-firebase-app';
 import 'expo-firebase-auth';
@@ -54,14 +55,20 @@ export default class extends React.Component {
     if (this.state.userProfile) {
       return (
         <View>
-          <Image
-            style={{ width: '100%', height: 400 }}
-            resizeMode="cover"
-            source={{ uri: this.state.userProfile.get('avatar_url') }}
-          />
+          <Transition shared={'avatarImage'}>
+            <Image
+              style={{ width: '100%', height: 400 }}
+              resizeMode="cover"
+              source={{ uri: this.state.userProfile.get('avatar_url') }}
+            />
+          </Transition>
           <View style={CommonStyles.containerItem}>
-            <Headline>{this.state.userProfile.get('display_name')}</Headline>
-            <Paragraph>{this.state.userProfile.get('details')}</Paragraph>
+            <Transition shared={'displayName'}>
+              <Headline>{this.state.userProfile.get('display_name')}</Headline>
+            </Transition>
+            <Transition shared={'details'}>
+              <Paragraph>{this.state.userProfile.get('details')}</Paragraph>
+            </Transition>
 
             {/*<Text>Email: {this.state.currentUser.email}</Text>*/}
             {/*<Text>Email verified: {this.state.currentUser.emailVerified.toString()}</Text>*/}

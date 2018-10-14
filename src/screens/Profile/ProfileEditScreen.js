@@ -12,6 +12,7 @@ import {
   Surface,
   TextInput,
 } from 'react-native-paper';
+import { Transition } from 'react-navigation-fluid-transitions';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { v4 as uuid } from 'uuid';
 
@@ -159,19 +160,25 @@ export default class extends React.Component {
 
     return (
       <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-        <Appbar.Header statusBarHeight={0} style={{ backgroundColor: '#ffffff' }}>
-          <Appbar.BackAction color={theme.colors.primary} onPress={() => navigation.goBack()} />
-          <Appbar.Content title="Edit profile" />
-        </Appbar.Header>
+        <Transition appear="top" disappear="top">
+          <View>
+            <Appbar.Header statusBarHeight={0} style={{ backgroundColor: theme.colors.surface }}>
+              <Appbar.BackAction color={theme.colors.primary} onPress={() => navigation.goBack()} />
+              <Appbar.Content title="Edit profile" />
+            </Appbar.Header>
+          </View>
+        </Transition>
         <KeyboardAwareScrollView>
           <View style={CommonStyles.container}>
-            <Card style={[CommonStyles.containerItem, { overflow: 'hidden' }]}>
-              <Image
-                source={{ uri: this.state.formAvatarUrl }}
-                style={{ width: '100%', height: 400 }}
-                resizeMode="cover"
-              />
-            </Card>
+            <Transition shared={'avatarImage'}>
+              <Card style={[CommonStyles.containerItem, { overflow: 'hidden' }]}>
+                <Image
+                  source={{ uri: this.state.formAvatarUrl }}
+                  style={{ width: '100%', height: 400 }}
+                  resizeMode="cover"
+                />
+              </Card>
+            </Transition>
             <Button
               mode="outlined"
               style={CommonStyles.containerItem}
@@ -179,25 +186,29 @@ export default class extends React.Component {
               Change avatar
             </Button>
             <Divider />
-            <TextInput
-              style={CommonStyles.containerItem}
-              label="Name"
-              mode="outlined"
-              maxLength={20}
-              value={this.state.formDisplayName}
-              onChangeText={formDisplayName => this.setState({ formDisplayName })}
-            />
-            <TextInput
-              style={CommonStyles.containerItem}
-              label="Details"
-              placeholder="Add some details"
-              textAlignVertical="top"
-              mode="outlined"
-              multiline
-              numberOfLines={4}
-              value={this.state.formDetails}
-              onChangeText={formDetails => this.setState({ formDetails })}
-            />
+            <Transition shared={'displayName'}>
+              <TextInput
+                style={CommonStyles.containerItem}
+                label="Name"
+                mode="outlined"
+                maxLength={20}
+                value={this.state.formDisplayName}
+                onChangeText={formDisplayName => this.setState({ formDisplayName })}
+              />
+            </Transition>
+            <Transition shared={'details'}>
+              <TextInput
+                style={CommonStyles.containerItem}
+                label="Details"
+                placeholder="Add some details"
+                textAlignVertical="top"
+                mode="outlined"
+                multiline
+                numberOfLines={4}
+                value={this.state.formDetails}
+                onChangeText={formDetails => this.setState({ formDetails })}
+              />
+            </Transition>
           </View>
         </KeyboardAwareScrollView>
         <Snackbar

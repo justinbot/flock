@@ -50,7 +50,7 @@ export default class extends React.Component {
     if (this.state.userProfile) {
       return (
         <View>
-          <Transition shared={'avatarImage' + this.state.userProfile.id} appear="scale">
+          <Transition shared={'avatarImage' + this.state.userProfile.id}>
             <Image
               style={{ width: '100%', height: 400, borderRadius: 0 }}
               resizeMode="cover"
