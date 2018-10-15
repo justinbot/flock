@@ -1,15 +1,15 @@
 import React from 'react';
-import { Image, ImageBackground, ImageEditor, View } from 'react-native';
+import { Image, ImageEditor, View } from 'react-native';
 import { ImagePicker } from 'expo';
 import {
   Appbar,
   Button,
   Card,
+  Dialog,
   Divider,
-  List,
+  Paragraph,
+  Portal,
   Snackbar,
-  Subheading,
-  Surface,
   TextInput,
 } from 'react-native-paper';
 import { Transition } from 'react-navigation-fluid-transitions';
@@ -103,11 +103,53 @@ export default class extends React.Component {
     // TODO Handle error
   };
 
-  _uploadAvatarImageAsync = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      allowsEditing: true,
-      aspect: [1, 1],
+  _uploadAvatarImageAsync = async uri => {
+    this.setState({
+      snackbarMessage: 'Uploading avatar...',
     });
+
+    // Upload avatar with a unique name
+    let uploadedAvatarPath = `/images/${firebase.auth().currentUser.uid}/avatars/${uuid()}`;
+    try {
+      let avatarRef = firebase.storage().ref(uploadedAvatarPath);
+
+      // Upload the file
+      await avatarRef.putFile(uri);
+
+      // Get url and save it to user profile
+      let uploadedAvatarUrl = await avatarRef.getDownloadURL();
+      await this.setState({ formAvatarUrl: uploadedAvatarUrl });
+      await this._saveProfileAsync();
+      this.setState({
+        snackbarMessage: 'Uploaded avatar image',
+      });
+    } catch (err) {
+      console.warn(err);
+      this.setState({
+        snackbarMessage: 'Failed to upload avatar',
+      });
+    }
+  };
+
+  _chooseAvatarImageAsync = async () => {
+    let launchCamera = false;
+    let result;
+    if (launchCamera) {
+      result = await ImagePicker.launchCameraAsync({
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.9,
+        exif: false,
+      });
+    } else {
+      result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.9,
+        exif: false,
+      });
+    }
 
     if (result.cancelled) {
       return;
@@ -128,31 +170,7 @@ export default class extends React.Component {
       );
     });
 
-    this.setState({
-      snackbarMessage: 'Uploading avatar...',
-    });
-
-    // Upload avatar with a unique name
-    let uploadedAvatarPath = `/images/${firebase.auth().currentUser.uid}/avatars/${uuid()}`;
-    try {
-      let avatarRef = firebase.storage().ref(uploadedAvatarPath);
-
-      // Upload the file
-      await avatarRef.putFile(resizedUri);
-
-      // Get url and save it to user profile
-      let uploadedAvatarUrl = await avatarRef.getDownloadURL();
-      await this.setState({ formAvatarUrl: uploadedAvatarUrl });
-      await this._saveProfileAsync();
-      this.setState({
-        snackbarMessage: 'Uploaded avatar image',
-      });
-    } catch (err) {
-      console.warn(err);
-      this.setState({
-        snackbarMessage: 'Failed to upload avatar',
-      });
-    }
+    this._uploadAvatarImageAsync(resizedUri);
   };
 
   render() {
@@ -174,41 +192,34 @@ export default class extends React.Component {
               <Card style={[CommonStyles.containerItem, { overflow: 'hidden' }]}>
                 <Image
                   source={{ uri: this.state.formAvatarUrl }}
-                  style={{ width: '100%', height: 400 }}
+                  style={{ flex: 1, aspectRatio: 1 }}
                   resizeMode="cover"
                 />
               </Card>
             </Transition>
-            <Button
-              mode="outlined"
-              style={CommonStyles.containerItem}
-              onPress={this._uploadAvatarImageAsync}>
+            <Button style={CommonStyles.containerItem} onPress={this._chooseAvatarImageAsync}>
               Change avatar
             </Button>
             <Divider />
-            <Transition shared={'displayName'}>
-              <TextInput
-                style={CommonStyles.containerItem}
-                label="Name"
-                mode="outlined"
-                maxLength={20}
-                value={this.state.formDisplayName}
-                onChangeText={formDisplayName => this.setState({ formDisplayName })}
-              />
-            </Transition>
-            <Transition shared={'details'}>
-              <TextInput
-                style={CommonStyles.containerItem}
-                label="Details"
-                placeholder="Add some details"
-                textAlignVertical="top"
-                mode="outlined"
-                multiline
-                numberOfLines={4}
-                value={this.state.formDetails}
-                onChangeText={formDetails => this.setState({ formDetails })}
-              />
-            </Transition>
+            <TextInput
+              style={CommonStyles.containerItem}
+              label="Name"
+              mode="outlined"
+              maxLength={20}
+              value={this.state.formDisplayName}
+              onChangeText={formDisplayName => this.setState({ formDisplayName })}
+            />
+            <TextInput
+              style={CommonStyles.containerItem}
+              label="Details"
+              placeholder="Add some details"
+              textAlignVertical="top"
+              mode="outlined"
+              multiline
+              numberOfLines={4}
+              value={this.state.formDetails}
+              onChangeText={formDetails => this.setState({ formDetails })}
+            />
           </View>
         </KeyboardAwareScrollView>
         <Snackbar

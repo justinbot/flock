@@ -16,11 +16,12 @@ export default class UserList extends React.Component {
     // TODO Fix enter animation
     // TODO Also animate remove
     <UserItem
+      userProfile={item}
+      onPressItem={this.props.onPressItem}
       animation="cardEnter"
       duration={300}
       easing={materialStandardEasing}
-      userProfile={item}
-      onPressItem={this.props.onPressItem}
+      useNativeDriver
     />
   );
 

@@ -57,9 +57,9 @@ export default class extends React.Component {
         <View>
           <Transition shared={'avatarImage'}>
             <Image
-              style={{ width: '100%', height: 400 }}
-              resizeMode="cover"
               source={{ uri: this.state.userProfile.get('avatar_url') }}
+              style={{ flex: 1, aspectRatio: 1 }}
+              resizeMode="cover"
             />
           </Transition>
           <View style={CommonStyles.containerItem}>
