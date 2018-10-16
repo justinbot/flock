@@ -1,17 +1,15 @@
-import { StyleSheet } from 'react-native';
+import { PixelRatio, StyleSheet } from 'react-native';
+
+import theme from 'src/constants/Theme';
 
 export default StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 22,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
+    alignItems: 'stretch',
+    paddingVertical: 22,
   },
   containerItem: {
-    marginVertical: 12,
-    marginHorizontal: 16,
-  },
-  avatarImage: {
-    borderRadius: 99999,
+    marginVertical: theme.marginVertical,
+    marginHorizontal: theme.marginHorizontal,
   },
 });

@@ -1,7 +1,17 @@
 import React from 'react';
-import { Image, StyleSheet, View } from 'react-native';
-import { Button, Headline, Paragraph, Surface, Text, Title } from 'react-native-paper';
+import { Image, ScrollView, StyleSheet, View } from 'react-native';
 import { Icon } from 'expo';
+import {
+  Button,
+  Divider,
+  Headline,
+  Paragraph,
+  Snackbar,
+  Surface,
+  Text,
+  Title,
+} from 'react-native-paper';
+import { Transition } from 'react-navigation-fluid-transitions';
 
 import firebase from 'expo-firebase-app';
 import 'expo-firebase-auth';
@@ -16,10 +26,7 @@ export default class extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentUser: firebase.auth().currentUser,
-      displayName: null,
-      details: null,
-      avatarUrl: null,
+      userProfile: null,
     };
   }
 
@@ -27,59 +34,87 @@ export default class extends React.Component {
     firebase
       .firestore()
       .collection('users')
-      .doc(this.state.currentUser.uid)
-      .onSnapshot(userProfile => {
-        // TODO handle error
-        this.setState({
-          displayName: userProfile.get('display_name'),
-          details: userProfile.get('details'),
-          avatarUrl: userProfile.get('avatar_url'),
-        });
-      });
+      .doc(firebase.auth().currentUser.uid)
+      .onSnapshot(
+        userProfile => {
+          if (userProfile.exists) {
+            this.setState({ userProfile });
+          } else {
+            this.setState({ userProfile: null, snackbarMessage: "User doesn't have a profile" });
+            // TODO User missing profile, could be first time
+          }
+        },
+        err => {
+          // TODO log to error reporting
+          console.log(err);
+        }
+      );
   }
+
+  _userProfileContent = () => {
+    if (this.state.userProfile) {
+      return (
+        <View>
+          <Transition shared={'avatarImage'}>
+            <Image
+              source={{ uri: this.state.userProfile.get('avatar_url') }}
+              style={{ flex: 1, aspectRatio: 1 }}
+              resizeMode="cover"
+            />
+          </Transition>
+          <View style={CommonStyles.containerItem}>
+            <Transition shared={'displayName'}>
+              <Headline>{this.state.userProfile.get('display_name')}</Headline>
+            </Transition>
+            <Transition shared={'details'}>
+              <Paragraph>{this.state.userProfile.get('details')}</Paragraph>
+            </Transition>
+
+            {/*<Text>Email: {this.state.currentUser.email}</Text>*/}
+            {/*<Text>Email verified: {this.state.currentUser.emailVerified.toString()}</Text>*/}
+            {/*<Text>Created: {this.state.currentUser.metadata.creationTime}</Text>*/}
+            {/*<Text>Last sign in: {this.state.currentUser.metadata.lastSignInTime}</Text>*/}
+          </View>
+        </View>
+      );
+    } else {
+      return <Text>TODO loader</Text>;
+    }
+  };
 
   render() {
     const { navigate } = this.props.navigation;
 
-    let content = <Text>TODO loader</Text>;
-    if (this.state.currentUser) {
-      content = (
-        <View style={{ alignItems: 'center' }}>
-          <Image
-            style={[{ width: 200, height: 200 }, CommonStyles.avatarImage]}
-            source={{ uri: this.state.avatarUrl }}
-          />
-          <Headline>{this.state.displayName}</Headline>
-          <Paragraph>{this.state.details}</Paragraph>
-
-          <Text>Email: {this.state.currentUser.email}</Text>
-          <Text>Email verified: {this.state.currentUser.emailVerified.toString()}</Text>
-          <Text>Created: {this.state.currentUser.metadata.creationTime}</Text>
-          <Text>Last sign in: {this.state.currentUser.metadata.lastSignInTime}</Text>
-        </View>
-      );
-    }
-
     return (
-      <Surface style={{ flex: 1 }}>
-        <Headline>Profile</Headline>
-        {/*TODO description*/}
-        {content}
-        <Button
-          icon={({ size, color }) => (
-            <Icon.Feather name="edit" width={size} height={size} color={color} />
-          )}
-          onPress={() => navigate('ProfileEdit')}>
-          Edit info
-        </Button>
-        <Button
-          icon={({ size, color }) => (
-            <Icon.Feather name="settings" width={size} height={size} color={color} />
-          )}
-          onPress={() => navigate('Settings')}>
-          Settings
-        </Button>
-      </Surface>
+      <ScrollView>
+        <Surface style={{ flex: 1 }}>
+          {/*TODO description*/}
+          {this._userProfileContent()}
+          <View style={CommonStyles.containerItem}>
+            <Divider />
+            <Button
+              icon={({ size, color }) => (
+                <Icon.Feather name="edit" width={size} height={size} color={color} />
+              )}
+              onPress={() => navigate('ProfileEdit')}>
+              Edit info
+            </Button>
+            <Button
+              icon={({ size, color }) => (
+                <Icon.Feather name="settings" width={size} height={size} color={color} />
+              )}
+              onPress={() => navigate('Settings')}>
+              Settings
+            </Button>
+          </View>
+          <Snackbar
+            visible={this.state.snackbarMessage != null}
+            duration={Snackbar.DURATION_SHORT}
+            onDismiss={() => this.setState({ snackbarMessage: null })}>
+            {this.state.snackbarMessage}
+          </Snackbar>
+        </Surface>
+      </ScrollView>
     );
   }
 }

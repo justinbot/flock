@@ -1,30 +1,31 @@
 import React from 'react';
-import { BackHandler, Image, ImageEditor, StyleSheet, View } from 'react-native';
+import { Image, ImageEditor, View } from 'react-native';
 import { ImagePicker } from 'expo';
 import {
+  Appbar,
   Button,
   Card,
+  Dialog,
   Divider,
-  Headline,
   Paragraph,
-  RadioButton,
+  Portal,
   Snackbar,
-  Subheading,
-  Surface,
   TextInput,
-  Title,
 } from 'react-native-paper';
+import { Transition } from 'react-navigation-fluid-transitions';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { v4 as uuid } from 'uuid';
 
 import firebase from 'expo-firebase-app';
 import 'expo-firebase-firestore';
 import 'expo-firebase-storage';
 
+import theme from 'src/constants/Theme';
 import CommonStyles from 'src/styles/CommonStyles';
 
 export default class extends React.Component {
   static navigationOptions = {
-    title: 'Edit Profile',
+    header: null,
   };
 
   _willBlurSubscription;
@@ -32,11 +33,11 @@ export default class extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentUser: firebase.auth().currentUser,
       snackbarMessage: null,
-      displayName: null,
-      details: null,
-      avatarUrl: null,
+      userProfile: null,
+      formDisplayName: null,
+      formDetails: null,
+      formAvatarUrl: null,
     };
   }
 
@@ -44,16 +45,33 @@ export default class extends React.Component {
     firebase
       .firestore()
       .collection('users')
-      .doc(this.state.currentUser.uid)
-      .get()
-      .then(userProfile => {
-        // TODO handle error
-        this.setState({
-          displayName: userProfile.get('display_name'),
-          details: userProfile.get('details'),
-          avatarUrl: userProfile.get('avatar_url'),
-        });
-      });
+      .doc(firebase.auth().currentUser.uid)
+      .onSnapshot(
+        userProfile => {
+          if (userProfile.exists) {
+            this.setState({
+              userProfile,
+              formDisplayName: userProfile.get('display_name'),
+              formDetails: userProfile.get('details'),
+              formAvatarUrl: userProfile.get('avatar_url'),
+            });
+          } else {
+            // TODO User missing profile, could be first time
+            this.setState({
+              snackbarMessage: "User doesn't have a profile",
+              userProfile: null,
+              formDisplayName: null,
+              formDetails: null,
+              formAvatarUrl: null,
+            });
+          }
+        },
+        err => {
+          // TODO log to error reporting
+          console.log(err);
+          this.setState({ snackbarMessage: "Couldn't load user profile" });
+        }
+      );
 
     // Save profile on navigate away
     this._willBlurSubscription = this.props.navigation.addListener(
@@ -67,16 +85,16 @@ export default class extends React.Component {
   }
 
   _saveProfileAsync = async () => {
-    // TODO Loader while saving, save on exit or change rather than button
+    // TODO Loader while saving, save on exit
     return firebase
       .firestore()
       .collection('users')
-      .doc(this.state.currentUser.uid)
+      .doc(firebase.auth().currentUser.uid)
       .set(
         {
-          display_name: this.state.displayName,
-          details: this.state.details,
-          avatar_url: this.state.avatarUrl,
+          display_name: this.state.formDisplayName,
+          details: this.state.formDetails,
+          avatar_url: this.state.formAvatarUrl,
         },
         {
           merge: true,
@@ -85,11 +103,53 @@ export default class extends React.Component {
     // TODO Handle error
   };
 
-  _uploadAvatarImageAsync = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      allowsEditing: true,
-      aspect: [1, 1],
+  _uploadAvatarImageAsync = async uri => {
+    this.setState({
+      snackbarMessage: 'Uploading avatar...',
     });
+
+    // Upload avatar with a unique name
+    let uploadedAvatarPath = `/images/${firebase.auth().currentUser.uid}/avatars/${uuid()}`;
+    try {
+      let avatarRef = firebase.storage().ref(uploadedAvatarPath);
+
+      // Upload the file
+      await avatarRef.putFile(uri);
+
+      // Get url and save it to user profile
+      let uploadedAvatarUrl = await avatarRef.getDownloadURL();
+      await this.setState({ formAvatarUrl: uploadedAvatarUrl });
+      await this._saveProfileAsync();
+      this.setState({
+        snackbarMessage: 'Uploaded avatar image',
+      });
+    } catch (err) {
+      console.warn(err);
+      this.setState({
+        snackbarMessage: 'Failed to upload avatar',
+      });
+    }
+  };
+
+  _chooseAvatarImageAsync = async () => {
+    let launchCamera = false;
+    let result;
+    if (launchCamera) {
+      result = await ImagePicker.launchCameraAsync({
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.9,
+        exif: false,
+      });
+    } else {
+      result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.9,
+        exif: false,
+      });
+    }
 
     if (result.cancelled) {
       return;
@@ -110,67 +170,58 @@ export default class extends React.Component {
       );
     });
 
-    this.setState({
-      snackbarMessage: 'Uploading avatar...',
-    });
-
-    // Upload avatar with a unique name
-    let uploadedAvatarPath = `/images/${this.state.currentUser.uid}/avatars/${uuid()}`;
-    try {
-      let avatarRef = firebase.storage().ref(uploadedAvatarPath);
-
-      // Upload the file
-      await avatarRef.putFile(resizedUri);
-
-      // Get url and save it to user profile
-      let uploadedAvatarUrl = await avatarRef.getDownloadURL();
-      await this.setState({ avatarUrl: uploadedAvatarUrl });
-      await this._saveProfileAsync();
-      this.setState({
-        snackbarMessage: 'Uploaded avatar image',
-      });
-    } catch (err) {
-      console.warn(err);
-      this.setState({
-        snackbarMessage: 'Failed to upload avatar',
-      });
-    }
+    this._uploadAvatarImageAsync(resizedUri);
   };
 
   render() {
-    const { navigate } = this.props.navigation;
+    const navigation = this.props.navigation;
 
     return (
-      <View style={{ flex: 1 }}>
-        <Headline>TODO</Headline>
-        <Divider />
-        <Image
-          style={[{ width: 200, height: 200 }, CommonStyles.avatarImage]}
-          source={{ uri: this.state.avatarUrl }}
-        />
-        <Button mode="outlined" onPress={this._uploadAvatarImageAsync}>
-          Change avatar
-        </Button>
-        <Card>
-          <Card.Content>
+      <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
+        <Transition appear="top" disappear="top">
+          <View>
+            <Appbar.Header statusBarHeight={0} style={{ backgroundColor: theme.colors.surface }}>
+              <Appbar.BackAction color={theme.colors.primary} onPress={() => navigation.goBack()} />
+              <Appbar.Content title="Edit profile" />
+            </Appbar.Header>
+          </View>
+        </Transition>
+        <KeyboardAwareScrollView>
+          <View style={CommonStyles.container}>
+            <Transition shared={'avatarImage'}>
+              <Card style={[CommonStyles.containerItem, { overflow: 'hidden' }]}>
+                <Image
+                  source={{ uri: this.state.formAvatarUrl }}
+                  style={{ flex: 1, aspectRatio: 1 }}
+                  resizeMode="cover"
+                />
+              </Card>
+            </Transition>
+            <Button style={CommonStyles.containerItem} onPress={this._chooseAvatarImageAsync}>
+              Change avatar
+            </Button>
+            <Divider />
             <TextInput
+              style={CommonStyles.containerItem}
               label="Name"
               mode="outlined"
               maxLength={20}
-              value={this.state.displayName}
-              onChangeText={displayName => this.setState({ displayName })}
+              value={this.state.formDisplayName}
+              onChangeText={formDisplayName => this.setState({ formDisplayName })}
             />
             <TextInput
-              label="About you"
+              style={CommonStyles.containerItem}
+              label="Details"
               placeholder="Add some details"
+              textAlignVertical="top"
               mode="outlined"
               multiline
-              numberOfLines={3}
-              value={this.state.details}
-              onChangeText={details => this.setState({ details })}
+              numberOfLines={4}
+              value={this.state.formDetails}
+              onChangeText={formDetails => this.setState({ formDetails })}
             />
-          </Card.Content>
-        </Card>
+          </View>
+        </KeyboardAwareScrollView>
         <Snackbar
           visible={this.state.snackbarMessage != null}
           duration={Snackbar.DURATION_SHORT}

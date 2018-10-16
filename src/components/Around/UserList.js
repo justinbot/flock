@@ -1,10 +1,11 @@
 import React from 'react';
-import { FlatList, View } from 'react-native';
+import { Easing, FlatList, View } from 'react-native';
 import { Icon } from 'expo';
 import { Card, Headline, Title } from 'react-native-paper';
 import * as Animatable from 'react-native-animatable';
 
 import theme from 'src/constants/Theme';
+import { materialStandardEasing } from 'src/constants/Transitions';
 import UserItem from 'src/components/Around/UserItem';
 import CommonStyles from 'src/styles/CommonStyles';
 
@@ -12,13 +13,15 @@ export default class UserList extends React.Component {
   _keyExtractor = (item, index) => item.id;
 
   _renderItem = ({ item }) => (
+    // TODO Fix enter animation
     // TODO Also animate remove
     <UserItem
-      animation="fadeIn"
-      duration={150}
-      easing="ease-out"
       userProfile={item}
       onPressItem={this.props.onPressItem}
+      animation="cardEnter"
+      duration={300}
+      easing={materialStandardEasing}
+      useNativeDriver
     />
   );
 

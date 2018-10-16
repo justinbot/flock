@@ -1,5 +1,7 @@
 import { createStackNavigator, createSwitchNavigator } from 'react-navigation';
+import { FluidNavigator } from 'react-navigation-fluid-transitions';
 
+import { transitionConfig } from 'src/constants/Transitions';
 import LoadingScreen from 'src/screens/Auth/LoadingScreen';
 import SettingsScreen from 'src/screens/SettingsScreen';
 import ProfileEditScreen from 'src/screens/Profile/ProfileEditScreen';
@@ -8,13 +10,10 @@ import AuthStack from 'src/navigation/AuthStack';
 import MainTabNavigator from 'src/navigation/MainTabNavigator';
 
 /* Routes to render on top of bottom tabs */
-const AppStack = createStackNavigator(
+const AppStack = FluidNavigator(
   {
     MainTabs: {
       screen: MainTabNavigator,
-      navigationOptions: {
-        header: null,
-      },
     },
     Settings: SettingsScreen,
     ProfileEdit: ProfileEditScreen,
@@ -22,6 +21,8 @@ const AppStack = createStackNavigator(
   },
   {
     initialRouteName: 'MainTabs',
+    headerMode: 'none',
+    transitionConfig,
   }
 );
 
