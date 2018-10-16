@@ -32,6 +32,8 @@ export default class AroundScreen extends React.Component {
   }
 
   componentDidMount() {
+    AppState.addEventListener('change', this._handleAppStateChange);
+
     nearbyAPI.onConnected(message => {
       console.log('onConnected: ' + message);
       this.setState({
@@ -102,6 +104,19 @@ export default class AroundScreen extends React.Component {
     // TODO connect automatically
     // nearbyAPI.connect();
   }
+
+  componentWillUnmount() {
+    AppState.removeEventListener('change', this._handleAppStateChange);
+  }
+
+  _handleAppStateChange = nextAppState => {
+    if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
+      // TODO App entered foreground
+    } else {
+      // TODO App entered background or inactive
+    }
+    this.setState({ appState: nextAppState });
+  };
 
   _handleMessageFound = async userId => {
     // When a message is found, fetch user data and add to list.
