@@ -178,17 +178,17 @@ export default class extends React.Component {
 
     return (
       <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-        <Transition appear="top" disappear="top">
+        {/*<Transition appear="top" disappear="top">*/}
           <View>
             <Appbar.Header statusBarHeight={0} style={{ backgroundColor: theme.colors.surface }}>
               <Appbar.BackAction color={theme.colors.primary} onPress={() => navigation.goBack()} />
               <Appbar.Content title="Edit profile" />
             </Appbar.Header>
           </View>
-        </Transition>
+        {/*</Transition>*/}
         <KeyboardAwareScrollView>
           <View style={CommonStyles.container}>
-            <Transition shared={'avatarImage'}>
+            {/*<Transition shared={'avatarImage'}>*/}
               <Card style={[CommonStyles.containerItem, { overflow: 'hidden' }]}>
                 <Image
                   source={{ uri: this.state.formAvatarUrl }}
@@ -196,7 +196,7 @@ export default class extends React.Component {
                   resizeMode="cover"
                 />
               </Card>
-            </Transition>
+            {/*</Transition>*/}
             <Button style={CommonStyles.containerItem} onPress={this._chooseAvatarImageAsync}>
               Change avatar
             </Button>

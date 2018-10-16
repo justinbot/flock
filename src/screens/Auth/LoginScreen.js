@@ -1,6 +1,15 @@
 import React from 'react';
 import { Image, StyleSheet, View } from 'react-native';
-import { Appbar, Button, HelperText, Paragraph, Surface, Text, TextInput } from 'react-native-paper';
+import {
+  Appbar,
+  Button,
+  HelperText,
+  Paragraph,
+  Subheading,
+  Surface,
+  Text,
+  TextInput,
+} from 'react-native-paper';
 import { Transition } from 'react-navigation-fluid-transitions';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
@@ -59,15 +68,15 @@ export default class LandingScreen extends React.Component {
 
     return (
       <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-        <Transition appear="top" disappear="top">
-          <View>
-            <Appbar.Header statusBarHeight={0} style={{ backgroundColor: theme.colors.surface }}>
-              <Appbar.BackAction color={theme.colors.primary} onPress={() => navigation.goBack()} />
-              <Appbar.Content title="Log in" />
-            </Appbar.Header>
-          </View>
-        </Transition>
-        <KeyboardAwareScrollView style={{ flex: 1 }}>
+        {/*<Transition appear="top" disappear="top">*/}
+        {/*<View>*/}
+        <Appbar.Header statusBarHeight={0} style={{ backgroundColor: theme.colors.surface }}>
+          <Appbar.BackAction color={theme.colors.primary} onPress={() => navigation.goBack()} />
+          <Appbar.Content title="Log in" />
+        </Appbar.Header>
+        {/*</View>*/}
+        {/*</Transition>*/}
+        <KeyboardAwareScrollView style={{ flex: 1 }} keyboardShouldPersistTaps="handled">
           <View style={{ flex: 1 }}>
             <TextInput
               style={CommonStyles.containerItem}
@@ -101,7 +110,7 @@ export default class LandingScreen extends React.Component {
               mode="contained"
               loading={this.state.busy}
               onPress={this._handleLoginAsync}>
-              Log in
+              <Subheading style={{ color: '#ffffff' }}>Log in</Subheading>
             </Button>
             <View style={CommonStyles.containerItem}>
               <Paragraph>Forgot your password? TODO</Paragraph>
