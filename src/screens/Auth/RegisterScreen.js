@@ -1,15 +1,24 @@
 import React from 'react';
 import { View } from 'react-native';
-import { Button, HelperText, Text, TextInput } from 'react-native-paper';
+import {
+  Appbar,
+  Button,
+  HelperText,
+  Paragraph,
+  Subheading,
+  Text,
+  TextInput,
+} from 'react-native-paper';
+import { Transition } from 'react-navigation-fluid-transitions';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import firebase from 'expo-firebase-app';
 import 'expo-firebase-auth';
 
-export default class LandingScreen extends React.Component {
-  static navigationOptions = {
-    title: 'Sign up',
-  };
+import theme from 'src/constants/Theme';
+import CommonStyles from 'src/styles/CommonStyles';
 
+export default class RegisterScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -28,7 +37,6 @@ export default class LandingScreen extends React.Component {
       .auth()
       .createUserWithEmailAndPassword(this.state.email, this.state.password)
       .then(user => {
-        console.log('Email and password registration and login successful!');
         // TODO: Navigate to onboarding for profile setup
         this.props.navigation.navigate('AppStack');
       })
@@ -53,47 +61,64 @@ export default class LandingScreen extends React.Component {
   };
 
   render() {
-    const { navigate } = this.props.navigation;
+    const navigation = this.props.navigation;
 
     return (
-      <View style={{ flex: 1 }}>
-        <Text>Sign up</Text>
-        <TextInput
-          label="Email"
-          value={this.state.email}
-          textContentType="emailAddress"
-          autoFocus
-          returnKeyType="next"
-          mode="outlined"
-          onChangeText={email => {
-            this.setState({ email, errorMessage: '' });
-          }}
-          error={this.state.errorMessage}
-        />
-        <HelperText type="error" visible={this.state.errorMessage}>
-          {this.state.errorMessage}
-        </HelperText>
-        <TextInput
-          label="Password"
-          value={this.state.password}
-          secureTextEntry
-          textContentType="password"
-          returnKeyType="done"
-          mode="outlined"
-          onChangeText={password => this.setState({ password, errorMessage: '' })}
-          error={this.state.errorMessage}
-        />
-        <Button mode="contained" loading={this.state.busy} onPress={this._handleRegisterAsync}>
-          Sign up for Flock
-        </Button>
-        <Text>
-          Already have an account?{' '}
-          <Text
-            style={{ fontWeight: 'bold', textDecorationLine: 'underline' }}
-            onPress={() => navigate('Login')}>
-            Log in.
-          </Text>
-        </Text>
+      <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
+        {/*<Transition appear="top" disappear="top">*/}
+        {/*<View>*/}
+        <Appbar.Header statusBarHeight={0} style={{ backgroundColor: theme.colors.surface }}>
+          <Appbar.BackAction color={theme.colors.primary} onPress={() => navigation.goBack()} />
+          <Appbar.Content title="Sign up" />
+        </Appbar.Header>
+        {/*</View>*/}
+        {/*</Transition>*/}
+        <KeyboardAwareScrollView style={{ flex: 1 }} keyboardShouldPersistTaps="handled">
+          <View style={{ flex: 1 }}>
+            <TextInput
+              style={CommonStyles.containerItem}
+              label="Email"
+              mode="outlined"
+              textContentType="emailAddress"
+              autoFocus
+              returnKeyType="next"
+              value={this.state.email}
+              onChangeText={email => {
+                this.setState({ email, errorMessage: '' });
+              }}
+              error={this.state.errorMessage}
+            />
+            <HelperText type="error" visible={this.state.errorMessage}>
+              {this.state.errorMessage}
+            </HelperText>
+            <TextInput
+              style={CommonStyles.containerItem}
+              label="Password"
+              mode="outlined"
+              textContentType="password"
+              secureTextEntry
+              returnKeyType="done"
+              value={this.state.password}
+              onChangeText={password => this.setState({ password, errorMessage: '' })}
+              error={this.state.errorMessage}
+            />
+            <Button
+              style={CommonStyles.containerItem}
+              mode="contained"
+              loading={this.state.busy}
+              onPress={this._handleRegisterAsync}>
+              <Subheading style={{ color: '#ffffff' }}>Sign up for Flock</Subheading>
+            </Button>
+            <Paragraph style={CommonStyles.containerItem}>
+              Already have an account?{' '}
+              <Text
+                style={{ fontWeight: 'bold', textDecorationLine: 'underline' }}
+                onPress={() => navigation.navigate('Login')}>
+                Log in.
+              </Text>
+            </Paragraph>
+          </View>
+        </KeyboardAwareScrollView>
       </View>
     );
   }
