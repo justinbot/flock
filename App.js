@@ -7,7 +7,6 @@ import * as Animatable from 'react-native-animatable';
 
 import firebase from 'expo-firebase-app';
 
-import config from 'src/constants/Config';
 import { animationDefinitions } from 'src/constants/Transitions';
 import theme from 'src/constants/Theme';
 import AppNavigator from 'src/navigation/AppNavigator';
@@ -32,10 +31,6 @@ export default class App extends React.Component {
   };
 
   componentWillMount() {
-    // Initialize Firebase using configuration info
-    // TODO: Firebase fixed at 5.0.3 until back navigation issue is resolved:
-    // See: https://github.com/react-navigation/react-navigation/issues/4329
-    // firebase.initializeApp(config.firebaseConfig);
     Animatable.initializeRegistryWithDefinitions(animationDefinitions);
   }
 
