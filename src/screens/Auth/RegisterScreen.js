@@ -37,7 +37,6 @@ export default class RegisterScreen extends React.Component {
       .auth()
       .createUserWithEmailAndPassword(this.state.email, this.state.password)
       .then(user => {
-        console.log('Email and password registration and login successful!');
         // TODO: Navigate to onboarding for profile setup
         this.props.navigation.navigate('AppStack');
       })

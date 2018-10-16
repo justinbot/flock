@@ -38,7 +38,6 @@ export default class LandingScreen extends React.Component {
       .auth()
       .signInWithEmailAndPassword(this.state.email, this.state.password)
       .then(() => {
-        console.log('Email and password login successful!');
         this.props.navigation.navigate('AppStack');
       })
       .catch(error => {

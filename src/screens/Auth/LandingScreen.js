@@ -29,12 +29,18 @@ export default class LandingScreen extends React.Component {
           <Button
             style={styles.registerButton}
             mode="contained"
-            onPress={() => navigate('Register')}>
-            <Subheading style={{ color: '#ffffff' }}>Sign up with email</Subheading>
+            onPress={() => navigate('Anonymous')}>
+            <Subheading style={{ color: '#ffffff' }}>Continue anonymously</Subheading>
           </Button>
-          <Button style={styles.loginButton} mode="contained" onPress={() => navigate('Login')}>
-            <Subheading style={{ color: '#ffffff' }}>Log in</Subheading>
-          </Button>
+          {/*<Button*/}
+            {/*style={styles.registerButton}*/}
+            {/*mode="contained"*/}
+            {/*onPress={() => navigate('Register')}>*/}
+            {/*<Subheading style={{ color: '#ffffff' }}>Sign up with email</Subheading>*/}
+          {/*</Button>*/}
+          {/*<Button style={styles.loginButton} mode="contained" onPress={() => navigate('Login')}>*/}
+            {/*<Subheading style={{ color: '#ffffff' }}>Log in</Subheading>*/}
+          {/*</Button>*/}
         </View>
       </View>
     );
