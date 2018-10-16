@@ -7,15 +7,21 @@ export default {
   marginVertical: 8,
   colors: {
     ...DefaultTheme.colors,
-    primary: '#5aada4',
-    primaryDark: '#257d75',
-    primaryLight: '#8cdfd5',
-    secondary: '#ffecb3',
+    primary: '#50b38f',
+    primaryDark: '#138362',
+    primaryLight: '#83e6bf',
+    secondary: '#ef957d',
     secondaryDark: '#cbba83',
     secondaryLight: '#ffffe5',
-    // background: '#f6f6f6',
-    // paper: '#ffffff',
+    // primary
+    // accent
+    // background
+    // surface
+    // text
+    // placeholder
+    // backdrop
   },
   fonts: {
+
   },
 };
