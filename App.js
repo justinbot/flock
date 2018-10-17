@@ -68,6 +68,7 @@ export default class App extends React.Component {
 
     const fontAssets = cacheFonts([
       Feather.font,
+      { 'lato-bold': require('src/assets/fonts/Lato/Lato-Bold.ttf') },
     ]);
 
     await Promise.all([...imageAssets, ...fontAssets]);
