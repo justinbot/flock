@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, View } from 'react-native';
+import { Image, ScrollView, View } from 'react-native';
 import { Appbar, Divider, Headline, Paragraph, Snackbar, Surface, Text } from 'react-native-paper';
 import { Transition } from 'react-navigation-fluid-transitions';
 
@@ -49,20 +49,25 @@ export default class extends React.Component {
   _userProfileContent = () => {
     if (this.state.userProfile) {
       return (
-        <View>
-          <Transition shared={'avatarImage' + this.state.userProfile.id}>
-            <Image
-              source={{ uri: this.state.userProfile.get('avatar_url') }}
-              style={{ flex: 1, aspectRatio: 1, borderRadius: 0 }}
-              resizeMode="cover"
-            />
-          </Transition>
+        <View style={{ flex: 1 }}>
+          <View style={{ margin: theme.marginHorizontal }}>
+            <Transition shared={'avatarImage' + this.state.userProfile.id}>
+              <Image
+                source={{ uri: this.state.userProfile.get('avatar_url') }}
+                style={{ flex: 1, aspectRatio: 1, borderRadius: 20 }}
+                resizeMode="cover"
+              />
+            </Transition>
+          </View>
           <View style={CommonStyles.containerItem}>
             <Transition shared={'displayName' + this.state.userProfile.id}>
-              <Headline>{this.state.userProfile.get('display_name')}</Headline>
+              <Text style={{ fontSize: 32, fontWeight: 'bold' }}>
+                {this.state.userProfile.get('display_name')}
+              </Text>
             </Transition>
+            <Divider style={{ backgroundColor: theme.colors.primary, height: 2 }}/>
             <Transition shared={'details' + this.state.userProfile.id}>
-              <Paragraph>{this.state.userProfile.get('details')}</Paragraph>
+              <Paragraph style={{ marginVertical: theme.marginVertical}}>{this.state.userProfile.get('details')}</Paragraph>
             </Transition>
           </View>
         </View>
@@ -77,7 +82,7 @@ export default class extends React.Component {
     const { navigation } = this.props;
 
     return (
-      <Surface style={{ flex: 1 }}>
+      <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
         <Transition appear="top" disappear="top">
           <View>
             <Appbar.Header statusBarHeight={0} style={{ backgroundColor: theme.colors.surface }}>
@@ -86,15 +91,16 @@ export default class extends React.Component {
             </Appbar.Header>
           </View>
         </Transition>
-        {this._userProfileContent()}
-        <Divider />
+        <ScrollView style={{ flex: 1}}>
+          {this._userProfileContent()}
+        </ScrollView>
         <Snackbar
           visible={this.state.snackbarMessage != null}
           duration={Snackbar.DURATION_SHORT}
           onDismiss={() => this.setState({ snackbarMessage: null })}>
           {this.state.snackbarMessage}
         </Snackbar>
-      </Surface>
+      </View>
     );
   }
 }

@@ -3,6 +3,7 @@ import { Image, ScrollView, StyleSheet, View } from 'react-native';
 import { Icon } from 'expo';
 import {
   Button,
+  Card,
   Divider,
   Headline,
   Paragraph,
@@ -16,6 +17,7 @@ import { Transition } from 'react-navigation-fluid-transitions';
 import firebase from 'expo-firebase-app';
 import 'expo-firebase-auth';
 
+import theme from 'src/constants/Theme';
 import CommonStyles from 'src/styles/CommonStyles';
 
 export default class extends React.Component {
@@ -54,27 +56,34 @@ export default class extends React.Component {
   _userProfileContent = () => {
     if (this.state.userProfile) {
       return (
-        <View>
-          <Transition shared={'avatarImage'}>
-            <Image
-              source={{ uri: this.state.userProfile.get('avatar_url') }}
-              style={{ flex: 1, aspectRatio: 1 }}
-              resizeMode="cover"
-            />
-          </Transition>
-          <View style={CommonStyles.containerItem}>
-            <Transition shared={'displayName'}>
-              <Headline>{this.state.userProfile.get('display_name')}</Headline>
-            </Transition>
-            <Transition shared={'details'}>
-              <Paragraph>{this.state.userProfile.get('details')}</Paragraph>
-            </Transition>
+        <View style={{ flex: 1 }}>
+          <ScrollView style={{ flex: 1 }}>
+            <View style={{ margin: theme.marginHorizontal, marginTop: 40 }}>
+              <Transition shared={'avatarImage'}>
+                <Image
+                  source={{ uri: this.state.userProfile.get('avatar_url') }}
+                  style={{ flex: 1, aspectRatio: 1, borderRadius: 20 }}
+                  resizeMode="cover"
+                />
+              </Transition>
+            </View>
+            <View style={CommonStyles.containerItem}>
+              <Transition shared={'displayName'}>
+                <Text style={{ fontSize: 32, fontWeight: 'bold' }}>
+                  {this.state.userProfile.get('display_name')}
+                </Text>
+              </Transition>
+              <Divider style={{ backgroundColor: theme.colors.primary, height: 2 }}/>
+              <Transition shared={'details'}>
+                <Paragraph style={{ marginVertical: theme.marginVertical}}>{this.state.userProfile.get('details')}</Paragraph>
+              </Transition>
 
-            {/*<Text>Email: {this.state.currentUser.email}</Text>*/}
-            {/*<Text>Email verified: {this.state.currentUser.emailVerified.toString()}</Text>*/}
-            {/*<Text>Created: {this.state.currentUser.metadata.creationTime}</Text>*/}
-            {/*<Text>Last sign in: {this.state.currentUser.metadata.lastSignInTime}</Text>*/}
-          </View>
+              {/*<Text>Email: {this.state.currentUser.email}</Text>*/}
+              {/*<Text>Email verified: {this.state.currentUser.emailVerified.toString()}</Text>*/}
+              {/*<Text>Created: {this.state.currentUser.metadata.creationTime}</Text>*/}
+              {/*<Text>Last sign in: {this.state.currentUser.metadata.lastSignInTime}</Text>*/}
+            </View>
+          </ScrollView>
         </View>
       );
     } else {
@@ -86,20 +95,22 @@ export default class extends React.Component {
     const { navigate } = this.props.navigation;
 
     return (
-      <ScrollView>
-        <Surface style={{ flex: 1 }}>
-          {/*TODO description*/}
-          {this._userProfileContent()}
+      <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
+        <ScrollView>
+          <Surface style={{ elevation: 2, paddingBottom: theme.marginVertical }}>{this._userProfileContent()}</Surface>
           <View style={CommonStyles.containerItem}>
-            <Divider />
             <Button
+              style={CommonStyles.containerItem}
+              mode="outlined"
               icon={({ size, color }) => (
                 <Icon.Feather name="edit" width={size} height={size} color={color} />
               )}
               onPress={() => navigate('ProfileEdit')}>
-              Edit info
+              Edit Profile
             </Button>
             <Button
+              style={CommonStyles.containerItem}
+              mode="outlined"
               icon={({ size, color }) => (
                 <Icon.Feather name="settings" width={size} height={size} color={color} />
               )}
@@ -113,8 +124,8 @@ export default class extends React.Component {
             onDismiss={() => this.setState({ snackbarMessage: null })}>
             {this.state.snackbarMessage}
           </Snackbar>
-        </Surface>
-      </ScrollView>
+        </ScrollView>
+      </View>
     );
   }
 }
