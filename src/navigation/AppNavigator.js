@@ -34,5 +34,6 @@ export default createSwitchNavigator(
   },
   {
     initialRouteName: 'Loading',
+    headerMode: 'none',
   }
 );

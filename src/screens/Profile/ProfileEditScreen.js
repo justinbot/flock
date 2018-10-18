@@ -175,7 +175,7 @@ export default class extends React.Component {
 
     return (
       <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-        <Transition appear="top" disappear="top">
+        <Transition appear="top" disappear="top" delay>
           <View>
             <Appbar.Header statusBarHeight={0} style={{ backgroundColor: theme.colors.surface }}>
               <Appbar.BackAction color={theme.colors.primary} onPress={() => navigation.goBack()} />
