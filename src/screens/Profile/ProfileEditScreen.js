@@ -10,6 +10,7 @@ import {
   Paragraph,
   Portal,
   Snackbar,
+  Surface,
   TextInput,
 } from 'react-native-paper';
 import { Transition } from 'react-navigation-fluid-transitions';
@@ -24,10 +25,6 @@ import theme from 'src/constants/Theme';
 import CommonStyles from 'src/styles/CommonStyles';
 
 export default class extends React.Component {
-  static navigationOptions = {
-    header: null,
-  };
-
   _willBlurSubscription;
 
   constructor(props) {
@@ -186,24 +183,35 @@ export default class extends React.Component {
             </Appbar.Header>
           </View>
         </Transition>
-        <KeyboardAwareScrollView keyboardShouldPersistTaps="handled">
-          <View style={CommonStyles.container}>
-            <Transition shared={'avatarImage'}>
-              <Card style={[CommonStyles.containerItem, { overflow: 'hidden' }]}>
-                <Image
-                  source={{ uri: this.state.formAvatarUrl }}
-                  style={{ flex: 1, aspectRatio: 1 }}
-                  resizeMode="cover"
-                />
-              </Card>
-            </Transition>
-            <Button
-              mode="outlined"
-              style={CommonStyles.containerItem}
-              onPress={this._chooseAvatarImageAsync}>
+        <KeyboardAwareScrollView keyboardShouldPersistTaps="handled" style={{ flex: 1 }}>
+          <Surface style={[CommonStyles.container, { elevation: 2 }]}>
+            <View style={{ flex: 1, paddingHorizontal: theme.marginHorizontal * 4 }}>
+              <View
+                style={[
+                  {
+                    flex: 1,
+                    aspectRatio: 1,
+                    padding: theme.marginHorizontal / 2,
+                    borderRadius: 28,
+                    backgroundColor: theme.colors.background,
+                  },
+                ]}>
+                <Transition shared={'avatarImage'}>
+                  {/*<Card style={[CommonStyles.containerItem, { overflow: 'hidden' }]}>*/}
+                  <Image
+                    source={{ uri: this.state.formAvatarUrl }}
+                    style={{ flex: 1, aspectRatio: 1, borderRadius: 20 }}
+                    resizeMode="cover"
+                  />
+                  {/*</Card>*/}
+                </Transition>
+              </View>
+            </View>
+            <Button style={CommonStyles.containerItem} onPress={this._chooseAvatarImageAsync}>
               Change avatar
             </Button>
-            <Divider style={CommonStyles.containerItem} />
+          </Surface>
+          <View style={CommonStyles.container}>
             <TextInput
               style={CommonStyles.containerItem}
               label="Name"
