@@ -5,8 +5,8 @@ import theme from 'src/constants/Theme';
 export default StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'stretch',
-    paddingVertical: 22,
+    paddingTop: theme.marginVertical * 2,
+    paddingBottom: theme.marginVertical,
   },
   containerItem: {
     marginVertical: theme.marginVertical,
