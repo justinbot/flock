@@ -3,6 +3,7 @@
     "name": "flock",
     "description": "Flock is a hyper-local social media app which uses location and mutual friends to help connect people.",
     "slug": "flock",
+    "githubUrl": "https://github.com/justinbot/flock",
     "sdkVersion": "30.0.0",
     "platforms": [
       "android"
@@ -10,9 +11,9 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "primaryColor": "#ffecb3",
-    "icon": "./src/assets/icon.png",
+    "icon": "./src/assets/images/icon.png",
     "splash": {
-      "image": "./src/assets/splash.png",
+      "image": "./src/assets/images/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -30,7 +31,7 @@
     "android": {
       "package": "com.justinbot.flock",
       "publishBundlePath": "android/app/src/main/assets/shell-app.bundle",
-      "publishManifestPath": "android/app/src/main/assets/shell-app-manifest.json"
+      "publishManifestPath": "android/app/src/main/assets/shell-app-manifest.json",
     },
     "androidStatusBar": {
       "backgroundColor": "#000000",

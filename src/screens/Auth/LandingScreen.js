@@ -20,7 +20,7 @@ export default class LandingScreen extends React.Component {
           duration={1600}
           useNativeDriver>
           <Image
-            source={require('src/assets/flock_logo.png')}
+            source={require('src/assets/images/flock_logo.png')}
             style={{ flex: 1, width: undefined, height: undefined, tintColor: '#ffffff' }}
             resizeMode="contain"
           />
