@@ -1,17 +1,8 @@
 import React from 'react';
-import { Image, ScrollView, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Image, ScrollView, StyleSheet, View } from 'react-native';
 import { Icon } from 'expo';
-import {
-  Button,
-  Card,
-  Divider,
-  Headline,
-  Paragraph,
-  Snackbar,
-  Surface,
-  Text,
-  Title,
-} from 'react-native-paper';
+import { Button, Divider, Paragraph, Snackbar, Surface, Text } from 'react-native-paper';
+import * as Animatable from 'react-native-animatable';
 import { Transition } from 'react-navigation-fluid-transitions';
 
 import firebase from 'expo-firebase-app';
@@ -21,10 +12,6 @@ import theme from 'src/constants/Theme';
 import CommonStyles from 'src/styles/CommonStyles';
 
 export default class extends React.Component {
-  static navigationOptions = {
-    header: null,
-  };
-
   constructor(props) {
     super(props);
     this.state = {
@@ -56,9 +43,9 @@ export default class extends React.Component {
   _userProfileContent = () => {
     if (this.state.userProfile) {
       return (
-        <View style={{ flex: 1 }}>
-          <ScrollView style={{ flex: 1 }}>
-            <View style={{ margin: theme.marginHorizontal, marginTop: 40 }}>
+        <Animatable.View animation="fadeIn" duration={300} useNativeDriver>
+          <View style={CommonStyles.container}>
+            <View style={{ margin: theme.marginHorizontal }}>
               <Transition shared={'avatarImage'}>
                 <Image
                   source={{ uri: this.state.userProfile.get('avatar_url') }}
@@ -69,25 +56,31 @@ export default class extends React.Component {
             </View>
             <View style={CommonStyles.containerItem}>
               <Transition shared={'displayName'}>
-                <Text style={{ fontSize: 32, fontWeight: 'bold' }}>
+                <Text
+                  style={{
+                    fontFamily: theme.fonts.alternateMedium,
+                    fontSize: 28,
+                    fontWeight: 'bold',
+                  }}>
                   {this.state.userProfile.get('display_name')}
                 </Text>
               </Transition>
-              <Divider style={{ backgroundColor: theme.colors.primary, height: 2 }}/>
+              <Divider style={{ backgroundColor: theme.colors.secondary, height: 2 }} />
               <Transition shared={'details'}>
-                <Paragraph style={{ marginVertical: theme.marginVertical}}>{this.state.userProfile.get('details')}</Paragraph>
+                <Paragraph style={{ marginVertical: theme.marginVertical }}>
+                  {this.state.userProfile.get('details')}
+                </Paragraph>
               </Transition>
-
-              {/*<Text>Email: {this.state.currentUser.email}</Text>*/}
-              {/*<Text>Email verified: {this.state.currentUser.emailVerified.toString()}</Text>*/}
-              {/*<Text>Created: {this.state.currentUser.metadata.creationTime}</Text>*/}
-              {/*<Text>Last sign in: {this.state.currentUser.metadata.lastSignInTime}</Text>*/}
             </View>
-          </ScrollView>
-        </View>
+          </View>
+        </Animatable.View>
       );
     } else {
-      return <Text>TODO loader</Text>;
+      return (
+        <View style={{ flex: 1, aspectRatio: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator />
+        </View>
+      );
     }
   };
 
@@ -97,8 +90,10 @@ export default class extends React.Component {
     return (
       <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
         <ScrollView>
-          <Surface style={{ elevation: 2, paddingBottom: theme.marginVertical }}>{this._userProfileContent()}</Surface>
-          <View style={CommonStyles.containerItem}>
+          <Surface style={{ elevation: 2, paddingBottom: theme.marginVertical }}>
+            {this._userProfileContent()}
+          </Surface>
+          <View style={CommonStyles.container}>
             <Button
               style={CommonStyles.containerItem}
               mode="outlined"
