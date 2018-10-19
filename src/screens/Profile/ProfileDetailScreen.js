@@ -1,6 +1,7 @@
 import React from 'react';
-import { Image, ScrollView, View } from 'react-native';
-import { Appbar, Divider, Headline, Paragraph, Snackbar, Surface, Text } from 'react-native-paper';
+import { ActivityIndicator, Image, ScrollView, View } from 'react-native';
+import { Appbar, Button, Divider, Paragraph, Snackbar, Subheading, Surface, Text } from 'react-native-paper';
+import * as Animatable from 'react-native-animatable';
 import { Transition } from 'react-navigation-fluid-transitions';
 
 import firebase from 'expo-firebase-app';
@@ -10,10 +11,6 @@ import theme from 'src/constants/Theme';
 import CommonStyles from 'src/styles/CommonStyles';
 
 export default class extends React.Component {
-  static navigationOptions = {
-    header: null,
-  };
-
   constructor(props) {
     super(props);
     this.state = {
@@ -49,32 +46,70 @@ export default class extends React.Component {
   _userProfileContent = () => {
     if (this.state.userProfile) {
       return (
-        <View style={{ flex: 1 }}>
-          <View style={{ margin: theme.marginHorizontal }}>
-            <Transition shared={'avatarImage' + this.state.userProfile.id}>
-              <Image
-                source={{ uri: this.state.userProfile.get('avatar_url') }}
-                style={{ flex: 1, aspectRatio: 1, borderRadius: 20 }}
-                resizeMode="cover"
-              />
-            </Transition>
+        <Animatable.View animation="fadeIn" duration={300} useNativeDriver>
+          <View style={CommonStyles.container}>
+            <View style={{ margin: theme.marginHorizontal }}>
+              <View
+                style={[
+                  {
+                    flex: 1,
+                    aspectRatio: 1,
+                    padding: theme.marginHorizontal / 2,
+                    borderRadius: 28,
+                    backgroundColor: theme.colors.background,
+                  },
+                ]}>
+                <Transition shared={'avatarImage' + this.state.userProfile.id}>
+                  <Image
+                    source={{ uri: this.state.userProfile.get('avatar_url') }}
+                    style={{ flex: 1, aspectRatio: 1, borderRadius: 20 }}
+                    resizeMode="cover"
+                  />
+                </Transition>
+              </View>
+            </View>
+            <View style={CommonStyles.containerItem}>
+              <Transition shared={'displayName' + this.state.userProfile.id}>
+                <Text
+                  style={{
+                    fontFamily: theme.fonts.alternateMedium,
+                    fontSize: 32,
+                    fontWeight: 'bold',
+                  }}>
+                  {this.state.userProfile.get('display_name')}
+                </Text>
+              </Transition>
+              <Transition shared={'details' + this.state.userProfile.id}>
+                <Paragraph style={{ marginVertical: theme.marginVertical }}>
+                  {this.state.userProfile.get('details')}
+                </Paragraph>
+              </Transition>
+            </View>
           </View>
-          <View style={CommonStyles.containerItem}>
-            <Transition shared={'displayName' + this.state.userProfile.id}>
-              <Text style={{ fontSize: 32, fontWeight: 'bold' }}>
-                {this.state.userProfile.get('display_name')}
-              </Text>
-            </Transition>
-            <Divider style={{ backgroundColor: theme.colors.primary, height: 2 }}/>
-            <Transition shared={'details' + this.state.userProfile.id}>
-              <Paragraph style={{ marginVertical: theme.marginVertical}}>{this.state.userProfile.get('details')}</Paragraph>
-            </Transition>
-          </View>
-        </View>
+        </Animatable.View>
       );
     } else {
-      console.log('missing profile for details');
-      return <Text>TODO missing profile</Text>;
+      return (
+        <View style={{ flex: 1, aspectRatio: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator />
+        </View>
+      );
+    }
+  };
+
+  _userProfileActions = () => {
+    if (this.state.userProfile) {
+      return (
+        <Button
+          mode="contained"
+          style={CommonStyles.containerItem}
+          onPress={this._chooseAvatarImageAsync}>
+          <Subheading style={{ color: '#ffffff' }}>Send message</Subheading>
+        </Button>
+      );
+    } else {
+      // TODO loading
+      return <View />;
     }
   };
 
@@ -83,16 +118,20 @@ export default class extends React.Component {
 
     return (
       <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-        <Transition appear="top" disappear="top">
+        <Transition appear="top" disappear="top" delay>
           <View>
             <Appbar.Header statusBarHeight={0} style={{ backgroundColor: theme.colors.surface }}>
               <Appbar.BackAction color={theme.colors.primary} onPress={() => navigation.goBack()} />
-              <Appbar.Content title="Nearby Flocker" />
+              <Appbar.Content />
+              <Appbar.Action icon="more-vert" onPress={this._onMore} />
             </Appbar.Header>
           </View>
         </Transition>
-        <ScrollView style={{ flex: 1}}>
-          {this._userProfileContent()}
+        <ScrollView>
+          <Surface style={{ elevation: 2, paddingBottom: theme.marginVertical }}>
+            {this._userProfileContent()}
+          </Surface>
+          <View style={CommonStyles.container}>{this._userProfileActions()}</View>
         </ScrollView>
         <Snackbar
           visible={this.state.snackbarMessage != null}

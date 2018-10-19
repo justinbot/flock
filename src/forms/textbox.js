@@ -1,7 +1,7 @@
 import React from 'react';
 import { TextInput } from 'react-native-paper';
 
-export default function textbox(locals) {
+export default locals => {
   if (locals.hidden) {
     return null;
   }
@@ -50,4 +50,4 @@ export default function textbox(locals) {
       value={locals.value}
     />
   );
-}
+};
