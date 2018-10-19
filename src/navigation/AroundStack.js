@@ -9,5 +9,6 @@ export default createStackNavigator(
   },
   {
     initialRouteName: 'Around',
+    headerMode: 'none',
   }
 );

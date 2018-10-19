@@ -13,14 +13,14 @@
   <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
   <uses-permission android:name="android.permission.INTERNET" />
-  <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+  <!--<uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />-->
   <uses-permission android:name="android.permission.WAKE_LOCK" />
 
   <!-- ADD PERMISSIONS HERE -->
   <!-- BEGIN OPTIONAL PERMISSIONS -->
   <uses-permission android:name="android.permission.MANAGE_DOCUMENTS" />
   <uses-permission android:name="android.permission.READ_INTERNAL_STORAGE" />
-  <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+  <!--<uses-permission android:name="android.permission.READ_PHONE_STATE" />-->
   <!-- <uses-permission android:name="android.permission.USE_FINGERPRINT" /> -->
   <!-- <uses-permission android:name="android.permission.VIBRATE" /> -->
   <!-- <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" /> -->
@@ -31,8 +31,8 @@
   <uses-permission android:name="android.permission.BLUETOOTH"/>
   <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
   <!-- Needed to use near-ultrasonic -->
-  <!-- <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> -->
-  <!-- <uses-permission android:name="android.permission.RECORD_AUDIO" /> -->
+  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+  <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
   <!-- These require runtime permissions on M -->
   <!-- <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> -->
@@ -63,7 +63,7 @@
 
     <meta-data
       android:name="com.google.android.nearby.messages.API_KEY"
-      android:value="<YOUR-API-KEY>" />
+      android:value="@string/google_api_key" />
 
     <activity
       android:name=".LauncherActivity"
