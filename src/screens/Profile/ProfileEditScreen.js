@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, ImageEditor, View } from 'react-native';
+import { BackHandler, Image, ImageEditor, Keyboard, View } from 'react-native';
 import { ImagePicker } from 'expo';
 import {
   Appbar,
@@ -14,6 +14,7 @@ import {
   TextInput,
 } from 'react-native-paper';
 import { Transition } from 'react-navigation-fluid-transitions';
+import t from 'tcomb-form-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { v4 as uuid } from 'uuid';
 
@@ -24,7 +25,35 @@ import 'expo-firebase-storage';
 import theme from 'src/constants/Theme';
 import CommonStyles from 'src/styles/CommonStyles';
 
+// TODO Global settings
+t.form.Form.i18n = {
+  optional: '',
+};
+
+let Form = t.form.Form;
+
+var UserProfile = t.struct({
+  display_name: t.maybe(t.String),
+  details: t.maybe(t.String),
+  avatar_url: t.maybe(t.String),
+});
+
+var options = {
+  fields: {
+    display_name: {
+      label: 'Username',
+    },
+    details: {
+      label: 'Details',
+    },
+    avatar_url: {
+      hidden: true,
+    },
+  },
+};
+
 export default class extends React.Component {
+  _didFocusSubscription;
   _willBlurSubscription;
 
   constructor(props) {
@@ -32,13 +61,15 @@ export default class extends React.Component {
     this.state = {
       snackbarMessage: null,
       userProfile: null,
-      formDisplayName: null,
-      formDetails: null,
-      formAvatarUrl: null,
+      userProfileFormValues: {},
     };
   }
 
   componentDidMount() {
+    this._willBlurSubscription = this.props.navigation.addListener('willBlur', payload =>
+      BackHandler.removeEventListener('hardwareBackPress', this._onBack)
+    );
+
     firebase
       .firestore()
       .collection('users')
@@ -48,18 +79,17 @@ export default class extends React.Component {
           if (userProfile.exists) {
             this.setState({
               userProfile,
-              formDisplayName: userProfile.get('display_name'),
-              formDetails: userProfile.get('details'),
-              formAvatarUrl: userProfile.get('avatar_url'),
+              userProfileFormValues: {
+                display_name: userProfile.get('display_name'),
+                details: userProfile.get('details'),
+                avatar_url: userProfile.get('avatar_url'),
+              },
             });
           } else {
             // TODO User missing profile, could be first time
             this.setState({
               snackbarMessage: "User doesn't have a profile",
               userProfile: null,
-              formDisplayName: null,
-              formDetails: null,
-              formAvatarUrl: null,
             });
           }
         },
@@ -78,26 +108,33 @@ export default class extends React.Component {
   }
 
   componentWillUnmount() {
+    this._didFocusSubscription && this._didFocusSubscription.remove();
     this._willBlurSubscription && this._willBlurSubscription.remove();
   }
 
   _saveProfileAsync = async () => {
     // TODO Loader while saving, save on exit
-    return firebase
-      .firestore()
-      .collection('users')
-      .doc(firebase.auth().currentUser.uid)
-      .set(
-        {
-          display_name: this.state.formDisplayName,
-          details: this.state.formDetails,
-          avatar_url: this.state.formAvatarUrl,
-        },
-        {
-          merge: true,
-        }
+    // console.log(this.refs.userProfileForm);
+    let userProfileForm = this.refs.userProfileForm.getValue();
+    if (userProfileForm) {
+      // Get non-null values
+      let userProfileFormValues = {};
+      Object.keys(userProfileForm).forEach(
+        key => userProfileForm[key] !== null && (userProfileFormValues[key] = userProfileForm[key])
       );
-    // TODO Handle error
+
+      return firebase
+        .firestore()
+        .collection('users')
+        .doc(firebase.auth().currentUser.uid)
+        .set(userProfileFormValues, {
+          merge: true,
+        });
+      // TODO Handle error
+    } else {
+      // TODO validation failed
+      return new Promise();
+    }
   };
 
   _uploadAvatarImageAsync = async uri => {
@@ -113,9 +150,11 @@ export default class extends React.Component {
       // Upload the file
       await avatarRef.putFile(uri);
 
-      // Get url and save it to user profile
+      // Get url and change it on user profile
       let uploadedAvatarUrl = await avatarRef.getDownloadURL();
-      await this.setState({ formAvatarUrl: uploadedAvatarUrl });
+      let userProfileFormValues = { ...this.state.userProfileFormValues };
+      userProfileFormValues.avatar_url = uploadedAvatarUrl;
+      await this.setState({ userProfileFormValues });
       await this._saveProfileAsync();
       this.setState({
         snackbarMessage: 'Uploaded avatar image',
@@ -170,6 +209,12 @@ export default class extends React.Component {
     this._uploadAvatarImageAsync(resizedUri);
   };
 
+  _onBack = () => {
+    Keyboard.dismiss();
+    // TODO Loader
+    this._saveProfileAsync().finally(() => this.props.navigation.goBack());
+  };
+
   render() {
     const navigation = this.props.navigation;
 
@@ -178,7 +223,7 @@ export default class extends React.Component {
         <Transition appear="top" disappear="top" delay>
           <View>
             <Appbar.Header statusBarHeight={0} style={{ backgroundColor: theme.colors.surface }}>
-              <Appbar.BackAction color={theme.colors.primary} onPress={() => navigation.goBack()} />
+              <Appbar.BackAction color={theme.colors.primary} onPress={() => this._onBack()} />
               <Appbar.Content title="Edit profile" />
             </Appbar.Header>
           </View>
@@ -199,7 +244,7 @@ export default class extends React.Component {
                 <Transition shared={'avatarImage'}>
                   {/*<Card style={[CommonStyles.containerItem, { overflow: 'hidden' }]}>*/}
                   <Image
-                    source={{ uri: this.state.formAvatarUrl }}
+                    source={{ uri: this.state.userProfileFormValues.avatar_url }}
                     style={{ flex: 1, aspectRatio: 1, borderRadius: 20 }}
                     resizeMode="cover"
                   />
@@ -212,25 +257,32 @@ export default class extends React.Component {
             </Button>
           </Surface>
           <View style={CommonStyles.container}>
-            <TextInput
-              style={CommonStyles.containerItem}
-              label="Name"
-              mode="outlined"
-              maxLength={20}
-              value={this.state.formDisplayName}
-              onChangeText={formDisplayName => this.setState({ formDisplayName })}
+            <Form
+              ref="userProfileForm"
+              type={UserProfile}
+              options={options}
+              value={this.state.userProfileFormValues}
+              onChange={values => this.setState({ userProfileFormValues: values })}
             />
-            <TextInput
-              style={CommonStyles.containerItem}
-              label="Details"
-              placeholder="Add some details"
-              textAlignVertical="top"
-              mode="outlined"
-              multiline
-              numberOfLines={4}
-              value={this.state.formDetails}
-              onChangeText={formDetails => this.setState({ formDetails })}
-            />
+            {/*<TextInput*/}
+            {/*style={CommonStyles.containerItem}*/}
+            {/*label="Name"*/}
+            {/*mode="outlined"*/}
+            {/*maxLength={20}*/}
+            {/*value={this.state.formDisplayName}*/}
+            {/*onChangeText={formDisplayName => this.setState({ formDisplayName })}*/}
+            {/*/>*/}
+            {/*<TextInput*/}
+            {/*style={CommonStyles.containerItem}*/}
+            {/*label="Details"*/}
+            {/*placeholder="Add some details"*/}
+            {/*textAlignVertical="top"*/}
+            {/*mode="outlined"*/}
+            {/*multiline*/}
+            {/*numberOfLines={4}*/}
+            {/*value={this.state.formDetails}*/}
+            {/*onChangeText={formDetails => this.setState({ formDetails })}*/}
+            {/*/>*/}
           </View>
         </KeyboardAwareScrollView>
         <Snackbar
