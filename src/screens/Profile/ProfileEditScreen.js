@@ -4,17 +4,11 @@ import { ImagePicker } from 'expo';
 import {
   Appbar,
   Button,
-  Card,
-  Dialog,
-  Divider,
-  Paragraph,
-  Portal,
   Snackbar,
   Surface,
-  TextInput,
 } from 'react-native-paper';
 import { Transition } from 'react-navigation-fluid-transitions';
-import t from 'tcomb-form-native';
+import t from 'src/forms';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { v4 as uuid } from 'uuid';
 
@@ -24,13 +18,6 @@ import 'expo-firebase-storage';
 
 import theme from 'src/constants/Theme';
 import CommonStyles from 'src/styles/CommonStyles';
-
-// TODO Global settings
-t.form.Form.i18n = {
-  optional: '',
-};
-
-let Form = t.form.Form;
 
 var UserProfile = t.struct({
   display_name: t.maybe(t.String),
@@ -42,9 +29,13 @@ var options = {
   fields: {
     display_name: {
       label: 'Username',
+      // template: templates.textbox,
+      // i18n,
     },
     details: {
       label: 'Details',
+      // template: templates.textbox,
+      // i18n,
     },
     avatar_url: {
       hidden: true,
@@ -218,6 +209,8 @@ export default class extends React.Component {
   render() {
     const navigation = this.props.navigation;
 
+    let Form = t.form.Form;
+
     return (
       <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
         <Transition appear="top" disappear="top" delay>
@@ -257,13 +250,15 @@ export default class extends React.Component {
             </Button>
           </Surface>
           <View style={CommonStyles.container}>
-            <Form
-              ref="userProfileForm"
-              type={UserProfile}
-              options={options}
-              value={this.state.userProfileFormValues}
-              onChange={values => this.setState({ userProfileFormValues: values })}
-            />
+            <View style={CommonStyles.containerItem}>
+              <Form
+                ref="userProfileForm"
+                type={UserProfile}
+                options={options}
+                value={this.state.userProfileFormValues}
+                onChange={values => this.setState({ userProfileFormValues: values })}
+              />
+            </View>
             {/*<TextInput*/}
             {/*style={CommonStyles.containerItem}*/}
             {/*label="Name"*/}
