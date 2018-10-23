@@ -157,7 +157,7 @@ export default class extends React.Component {
     return (
       <Surface style={{ flex: 1 }}>
         <Appbar.Header statusBarHeight={0} style={{ backgroundColor: theme.colors.surface }}>
-          <Appbar.Content title="Set up your Flock profile" />
+          <Appbar.Content title="Get started with Flock" />
         </Appbar.Header>
         <KeyboardAwareScrollView keyboardShouldPersistTaps="handled" style={{ flex: 1 }}>
           <Surface style={[CommonStyles.container, { elevation: 2 }]}>
@@ -188,14 +188,14 @@ export default class extends React.Component {
             </Button>
           </Surface>
           <View style={CommonStyles.container}>
+            <Form
+              ref="userProfileForm"
+              type={UserProfile}
+              options={options}
+              value={this.state.userProfileFormValues}
+              onChange={values => this.setState({ userProfileFormValues: values })}
+            />
             <View style={CommonStyles.containerItem}>
-              <Form
-                ref="userProfileForm"
-                type={UserProfile}
-                options={options}
-                value={this.state.userProfileFormValues}
-                onChange={values => this.setState({ userProfileFormValues: values })}
-              />
               <Button mode="contained" onPress={this._onContinue}>
                 <Subheading style={{ color: '#ffffff' }}>Continue to Flock</Subheading>
               </Button>
