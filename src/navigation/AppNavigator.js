@@ -7,6 +7,7 @@ import SettingsScreen from 'src/screens/SettingsScreen';
 import ProfileEditScreen from 'src/screens/Profile/ProfileEditScreen';
 import ProfileDetailScreen from 'src/screens/Profile/ProfileDetailScreen';
 import AuthStack from 'src/navigation/AuthStack';
+import OnboardStack from 'src/navigation/OnboardStack';
 import MainTabNavigator from 'src/navigation/MainTabNavigator';
 
 /* Routes to render on top of bottom tabs */
@@ -29,8 +30,9 @@ const AppStack = FluidNavigator(
 export default createSwitchNavigator(
   {
     Loading: LoadingScreen,
-    AuthStack: AuthStack,
-    AppStack: AppStack,
+    AuthStack,
+    AppStack,
+    OnboardStack,
   },
   {
     initialRouteName: 'Loading',
