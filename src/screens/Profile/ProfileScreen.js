@@ -1,28 +1,17 @@
 import React from 'react';
-import { Image, ScrollView, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Image, ScrollView, StyleSheet, View } from 'react-native';
 import { Icon } from 'expo';
-import {
-  Button,
-  Divider,
-  Headline,
-  Paragraph,
-  Snackbar,
-  Surface,
-  Text,
-  Title,
-} from 'react-native-paper';
+import { Appbar, Button, Divider, Paragraph, Snackbar, Surface, Text } from 'react-native-paper';
+import * as Animatable from 'react-native-animatable';
 import { Transition } from 'react-navigation-fluid-transitions';
 
 import firebase from 'expo-firebase-app';
 import 'expo-firebase-auth';
 
+import theme from 'src/constants/Theme';
 import CommonStyles from 'src/styles/CommonStyles';
 
 export default class extends React.Component {
-  static navigationOptions = {
-    header: null,
-  };
-
   constructor(props) {
     super(props);
     this.state = {
@@ -54,31 +43,44 @@ export default class extends React.Component {
   _userProfileContent = () => {
     if (this.state.userProfile) {
       return (
-        <View>
-          <Transition shared={'avatarImage'}>
-            <Image
-              source={{ uri: this.state.userProfile.get('avatar_url') }}
-              style={{ flex: 1, aspectRatio: 1 }}
-              resizeMode="cover"
-            />
-          </Transition>
-          <View style={CommonStyles.containerItem}>
-            <Transition shared={'displayName'}>
-              <Headline>{this.state.userProfile.get('display_name')}</Headline>
-            </Transition>
-            <Transition shared={'details'}>
-              <Paragraph>{this.state.userProfile.get('details')}</Paragraph>
-            </Transition>
-
-            {/*<Text>Email: {this.state.currentUser.email}</Text>*/}
-            {/*<Text>Email verified: {this.state.currentUser.emailVerified.toString()}</Text>*/}
-            {/*<Text>Created: {this.state.currentUser.metadata.creationTime}</Text>*/}
-            {/*<Text>Last sign in: {this.state.currentUser.metadata.lastSignInTime}</Text>*/}
+        <Animatable.View animation="fadeIn" duration={300} useNativeDriver>
+          <View style={CommonStyles.container}>
+            <View style={{ margin: theme.marginHorizontal }}>
+              <View
+                style={[
+                  {
+                    flex: 1,
+                    aspectRatio: 1,
+                    padding: theme.marginHorizontal / 2,
+                    borderRadius: 28,
+                    backgroundColor: theme.colors.background,
+                  },
+                ]}>
+                <Transition shared={'avatarImage'}>
+                  <Image
+                    source={{ uri: this.state.userProfile.get('avatar_url') }}
+                    style={{ flex: 1, aspectRatio: 1, borderRadius: 20 }}
+                    resizeMode="cover"
+                  />
+                </Transition>
+              </View>
+            </View>
+            <View style={CommonStyles.containerItem}>
+              <Transition shared={'details'}>
+                <Paragraph style={{ marginVertical: theme.marginVertical }}>
+                  {this.state.userProfile.get('details')}
+                </Paragraph>
+              </Transition>
+            </View>
           </View>
-        </View>
+        </Animatable.View>
       );
     } else {
-      return <Text>TODO loader</Text>;
+      return (
+        <View style={{ flex: 1, aspectRatio: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator />
+        </View>
+      );
     }
   };
 
@@ -86,35 +88,35 @@ export default class extends React.Component {
     const { navigate } = this.props.navigation;
 
     return (
-      <ScrollView>
-        <Surface style={{ flex: 1 }}>
-          {/*TODO description*/}
-          {this._userProfileContent()}
-          <View style={CommonStyles.containerItem}>
-            <Divider />
-            <Button
-              icon={({ size, color }) => (
-                <Icon.Feather name="edit" width={size} height={size} color={color} />
-              )}
-              onPress={() => navigate('ProfileEdit')}>
-              Edit info
-            </Button>
-            <Button
-              icon={({ size, color }) => (
-                <Icon.Feather name="settings" width={size} height={size} color={color} />
-              )}
-              onPress={() => navigate('Settings')}>
-              Settings
-            </Button>
-          </View>
-          <Snackbar
-            visible={this.state.snackbarMessage != null}
-            duration={Snackbar.DURATION_SHORT}
-            onDismiss={() => this.setState({ snackbarMessage: null })}>
-            {this.state.snackbarMessage}
-          </Snackbar>
-        </Surface>
-      </ScrollView>
+      <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
+        <Appbar.Header style={{ backgroundColor: theme.colors.surface }} statusBarHeight={0}>
+          <Appbar.Content
+            title={this.state.userProfile && this.state.userProfile.get('display_name')}
+          />
+          <Appbar.Action
+            color={theme.colors.primary}
+            icon={({ size, color }) => <Icon.Feather name="edit" size={size} color={color} />}
+            onPress={() => navigate('ProfileEdit')}
+          />
+          <Appbar.Action
+            color={theme.colors.primary}
+            icon={({ size, color }) => <Icon.Feather name="settings" size={size} color={color} />}
+            onPress={() => navigate('Settings')}
+          />
+        </Appbar.Header>
+        <ScrollView>
+          <Surface style={{ elevation: 2, paddingBottom: theme.marginVertical }}>
+            {this._userProfileContent()}
+          </Surface>
+          <View style={CommonStyles.container} />
+        </ScrollView>
+        <Snackbar
+          visible={this.state.snackbarMessage != null}
+          duration={Snackbar.DURATION_SHORT}
+          onDismiss={() => this.setState({ snackbarMessage: null })}>
+          {this.state.snackbarMessage}
+        </Snackbar>
+      </View>
     );
   }
 }

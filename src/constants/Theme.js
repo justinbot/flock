@@ -2,9 +2,10 @@ import { DefaultTheme } from 'react-native-paper';
 
 export default {
   ...DefaultTheme,
-  roundness: 8,
+  roundness: 12,
+  margin: 10,
   marginHorizontal: 16,
-  marginVertical: 8,
+  marginVertical: 10,
   colors: {
     ...DefaultTheme.colors,
     primary: '#50b38f',
@@ -22,6 +23,6 @@ export default {
     // backdrop
   },
   fonts: {
-
+    alternateMedium: 'lato-bold',
   },
 };
