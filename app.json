@@ -8,14 +8,14 @@
     "platforms": [
       "android"
     ],
-    "version": "1.0.0",
+    "version": "0.1.0",
     "orientation": "portrait",
-    "primaryColor": "#ffecb3",
-    "icon": "./src/assets/images/icon.png",
+    "primaryColor": "#50b38f",
+    "icon": "./src/assets/images/flock_icon.png",
     "splash": {
-      "image": "./src/assets/images/splash.png",
+      "image": "./src/assets/images/flock_splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#50b38f"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -32,6 +32,9 @@
       "package": "com.justinbot.flock",
       "publishBundlePath": "android/app/src/main/assets/shell-app.bundle",
       "publishManifestPath": "android/app/src/main/assets/shell-app-manifest.json",
+      "adaptiveIcon": {
+        "backgroundColor": "#50b38f"
+      }
     },
     "androidStatusBar": {
       "backgroundColor": "#000000",
