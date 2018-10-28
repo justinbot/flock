@@ -16,7 +16,8 @@ const templates = {
 // const stylesheet = {};
 
 const i18n = {
-  optional: '',
+  optional: ' (optional)',
+  required: '',
 };
 
 t.form.Form.templates = templates;

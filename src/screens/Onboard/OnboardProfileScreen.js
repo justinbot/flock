@@ -1,12 +1,7 @@
 import React from 'react';
-import { BackHandler, Image, ImageEditor, Keyboard, View } from 'react-native';
+import { Image, ImageEditor, Keyboard, View } from 'react-native';
 import { ImagePicker } from 'expo';
-import {
-  Appbar,
-  Button,
-  Snackbar,
-  Surface,
-} from 'react-native-paper';
+import { Appbar, Button, Divider, Snackbar, Subheading, Surface, Title } from 'react-native-paper';
 import { Transition } from 'react-navigation-fluid-transitions';
 import t from 'src/forms';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -39,69 +34,18 @@ var options = {
   },
 };
 
+// TODO Considerable code duplication with ProfileEditScreen
 export default class extends React.Component {
-  _didFocusSubscription;
-  _willBlurSubscription;
-
   constructor(props) {
     super(props);
     this.state = {
       snackbarMessage: null,
-      userProfile: null,
       userProfileFormValues: {},
     };
   }
 
-  componentDidMount() {
-    this._willBlurSubscription = this.props.navigation.addListener('willBlur', payload =>
-      BackHandler.removeEventListener('hardwareBackPress', this._onBack)
-    );
-
-    firebase
-      .firestore()
-      .collection('users')
-      .doc(firebase.auth().currentUser.uid)
-      .onSnapshot(
-        userProfile => {
-          if (userProfile.exists) {
-            this.setState({
-              userProfile,
-              userProfileFormValues: {
-                display_name: userProfile.get('display_name'),
-                details: userProfile.get('details'),
-                avatar_url: userProfile.get('avatar_url'),
-              },
-            });
-          } else {
-            // TODO User missing profile, could be first time
-            this.setState({
-              snackbarMessage: "User doesn't have a profile",
-              userProfile: null,
-            });
-          }
-        },
-        err => {
-          // TODO log to error reporting
-          console.log(err);
-          this.setState({ snackbarMessage: "Couldn't load user profile" });
-        }
-      );
-
-    // Save profile on navigate away
-    this._willBlurSubscription = this.props.navigation.addListener(
-      'willBlur',
-      this._saveProfileAsync
-    );
-  }
-
-  componentWillUnmount() {
-    this._didFocusSubscription && this._didFocusSubscription.remove();
-    this._willBlurSubscription && this._willBlurSubscription.remove();
-  }
-
   _saveProfileAsync = async () => {
-    // TODO Loader while saving, save on exit
-    // console.log(this.refs.userProfileForm);
+    // TODO Loader while saving
     let userProfileForm = this.refs.userProfileForm.getValue();
     if (userProfileForm) {
       // Get non-null values
@@ -142,7 +86,6 @@ export default class extends React.Component {
       let userProfileFormValues = { ...this.state.userProfileFormValues };
       userProfileFormValues.avatar_url = uploadedAvatarUrl;
       await this.setState({ userProfileFormValues });
-      await this._saveProfileAsync();
       this.setState({
         snackbarMessage: 'Uploaded avatar image',
       });
@@ -196,10 +139,14 @@ export default class extends React.Component {
     this._uploadAvatarImageAsync(resizedUri);
   };
 
-  _onBack = () => {
+  _onContinue = () => {
     Keyboard.dismiss();
     // TODO Loader
-    this._saveProfileAsync().finally(() => this.props.navigation.goBack());
+    this._saveProfileAsync()
+      .then(() => this.props.navigation.navigate('AppStack'))
+      .catch(err => {
+        // Save or validation failed
+      });
   };
 
   render() {
@@ -208,15 +155,10 @@ export default class extends React.Component {
     let Form = t.form.Form;
 
     return (
-      <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-        <Transition appear="top" disappear="top" delay>
-          <View>
-            <Appbar.Header statusBarHeight={0} style={{ backgroundColor: theme.colors.surface }}>
-              <Appbar.BackAction color={theme.colors.primary} onPress={() => this._onBack()} />
-              <Appbar.Content title="Edit profile" />
-            </Appbar.Header>
-          </View>
-        </Transition>
+      <Surface style={{ flex: 1 }}>
+        <Appbar.Header statusBarHeight={0} style={{ backgroundColor: theme.colors.surface }}>
+          <Appbar.Content title="Get started with Flock" />
+        </Appbar.Header>
         <KeyboardAwareScrollView keyboardShouldPersistTaps="handled" style={{ flex: 1 }}>
           <Surface style={[CommonStyles.container, { elevation: 2 }]}>
             <View style={{ flex: 1, paddingHorizontal: theme.marginHorizontal * 4 }}>
@@ -246,34 +188,18 @@ export default class extends React.Component {
             </Button>
           </Surface>
           <View style={CommonStyles.container}>
+            <Form
+              ref="userProfileForm"
+              type={UserProfile}
+              options={options}
+              value={this.state.userProfileFormValues}
+              onChange={values => this.setState({ userProfileFormValues: values })}
+            />
             <View style={CommonStyles.containerItem}>
-              <Form
-                ref="userProfileForm"
-                type={UserProfile}
-                options={options}
-                value={this.state.userProfileFormValues}
-                onChange={values => this.setState({ userProfileFormValues: values })}
-              />
+              <Button mode="contained" onPress={this._onContinue}>
+                <Subheading style={{ color: '#ffffff' }}>Continue to Flock</Subheading>
+              </Button>
             </View>
-            {/*<TextInput*/}
-            {/*style={CommonStyles.containerItem}*/}
-            {/*label="Name"*/}
-            {/*mode="outlined"*/}
-            {/*maxLength={20}*/}
-            {/*value={this.state.formDisplayName}*/}
-            {/*onChangeText={formDisplayName => this.setState({ formDisplayName })}*/}
-            {/*/>*/}
-            {/*<TextInput*/}
-            {/*style={CommonStyles.containerItem}*/}
-            {/*label="Details"*/}
-            {/*placeholder="Add some details"*/}
-            {/*textAlignVertical="top"*/}
-            {/*mode="outlined"*/}
-            {/*multiline*/}
-            {/*numberOfLines={4}*/}
-            {/*value={this.state.formDetails}*/}
-            {/*onChangeText={formDetails => this.setState({ formDetails })}*/}
-            {/*/>*/}
           </View>
         </KeyboardAwareScrollView>
         <Snackbar
@@ -282,7 +208,7 @@ export default class extends React.Component {
           onDismiss={() => this.setState({ snackbarMessage: null })}>
           {this.state.snackbarMessage}
         </Snackbar>
-      </View>
+      </Surface>
     );
   }
 }

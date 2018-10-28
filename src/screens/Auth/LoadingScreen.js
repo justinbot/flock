@@ -3,6 +3,7 @@ import { ActivityIndicator, View } from 'react-native';
 
 import firebase from 'expo-firebase-app';
 import 'expo-firebase-auth';
+import 'expo-firebase-firestore';
 
 export default class LoadingScreen extends React.Component {
   constructor(props) {
@@ -14,11 +15,32 @@ export default class LoadingScreen extends React.Component {
     // Navigated based on user log in status
     firebase.auth().onAuthStateChanged(user => {
       if (!user) {
-        console.log('Not logged in!');
+        // Not logged in
         this.props.navigation.navigate('AuthStack');
       } else {
-        console.log('Already logged in!');
-        this.props.navigation.navigate('AppStack');
+        // Already logged in
+        // Check if user has profile or needs onboarding.
+        firebase
+          .firestore()
+          .collection('users')
+          .doc(user.uid)
+          .get()
+          .then(userProfile => {
+            if (userProfile.exists) {
+              console.log('use hasprofile');
+              this.props.navigation.navigate('AppStack');
+            } else {
+              // User missing profile
+              console.log('use has no profile');
+              this.props.navigation.navigate('OnboardStack');
+            }
+          })
+          .catch(err => {
+            // TODO Couldn't get user profile
+            // TODO log to error reporting
+            console.log(err);
+            this.props.navigation.navigate('AppStack');
+          });
       }
     });
   };

@@ -104,6 +104,7 @@ export default class LandingScreen extends React.Component {
               onChangeText={password => this.setState({ password, errorMessage: '' })}
               error={this.state.errorMessage}
             />
+            {/*TODO re-enter password*/}
             <Button
               style={CommonStyles.containerItem}
               mode="contained"
