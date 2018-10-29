@@ -1,6 +1,22 @@
 import React from 'react';
-import { ActivityIndicator, Image, ScrollView, View } from 'react-native';
-import { Appbar, Button, Divider, Paragraph, Snackbar, Subheading, Surface, Text } from 'react-native-paper';
+import {
+  ActivityIndicator,
+  Image,
+  findNodeHandle,
+  ScrollView,
+  UIManager,
+  View,
+} from 'react-native';
+import {
+  Appbar,
+  Button,
+  Divider,
+  Paragraph,
+  Snackbar,
+  Subheading,
+  Surface,
+  Text,
+} from 'react-native-paper';
 import * as Animatable from 'react-native-animatable';
 import { Transition } from 'react-navigation-fluid-transitions';
 
@@ -42,6 +58,29 @@ export default class extends React.Component {
         }
       );
   }
+
+  _appbarDropdown = () => {
+    // Display native dropdown menu
+    let menuActions = ['Add friend', 'Send message', 'Report or block'];
+    UIManager.showPopupMenu(
+      findNodeHandle(this.refs.appbarAction),
+      menuActions,
+      error => {
+        // TODO Log to error reporting
+      },
+      (
+        action, // "itemSelected", "dismissed"
+        index // index of item that's selected
+      ) => {
+        /* handle action */
+        if (action === 'itemSelected') {
+          if (index === 0) {
+            // TODO Handle report user
+          }
+        }
+      }
+    );
+  };
 
   _userProfileContent = () => {
     if (this.state.userProfile) {
@@ -100,12 +139,20 @@ export default class extends React.Component {
   _userProfileActions = () => {
     if (this.state.userProfile) {
       return (
-        <Button
-          mode="contained"
-          style={CommonStyles.containerItem}
-          onPress={this._chooseAvatarImageAsync}>
-          <Subheading style={{ color: '#ffffff' }}>Send message</Subheading>
-        </Button>
+        <View>
+          <Button
+            mode="contained"
+            style={CommonStyles.containerItem}
+            onPress={() => console.log('TODO Add friend')}>
+            <Subheading style={{ color: '#ffffff' }}>Add friend</Subheading>
+          </Button>
+          <Button
+            mode="contained"
+            style={CommonStyles.containerItem}
+            onPress={() => console.log('TODO Message')}>
+            <Subheading style={{ color: '#ffffff' }}>Message</Subheading>
+          </Button>
+        </View>
       );
     } else {
       // TODO loading
@@ -123,7 +170,7 @@ export default class extends React.Component {
             <Appbar.Header statusBarHeight={0} style={{ backgroundColor: theme.colors.surface }}>
               <Appbar.BackAction color={theme.colors.primary} onPress={() => navigation.goBack()} />
               <Appbar.Content />
-              <Appbar.Action icon="more-vert" onPress={this._onMore} />
+              <Appbar.Action ref="appbarAction" icon="more-vert" onPress={this._appbarDropdown} />
             </Appbar.Header>
           </View>
         </Transition>
