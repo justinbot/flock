@@ -3,6 +3,7 @@ import { createMaterialBottomTabNavigator } from 'react-navigation-material-bott
 
 import theme from 'src/constants/Theme';
 import AroundStack from 'src/navigation/AroundStack';
+import PeopleStack from 'src/navigation/PeopleStack';
 import ProfileStack from 'src/navigation/ProfileStack';
 import TabBarIcon from 'src/components/TabBarIcon';
 
@@ -14,6 +15,15 @@ export default createMaterialBottomTabNavigator(
         title: 'Home',
         tabBarIcon: ({ focused, tintColor }) => (
           <TabBarIcon name={'feather'} focused={focused} tintColor={tintColor} />
+        ),
+      },
+    },
+    PeopleStack: {
+      screen: PeopleStack,
+      navigationOptions: {
+        title: 'Messages',
+        tabBarIcon: ({ focused, tintColor }) => (
+          <TabBarIcon name={'send'} focused={focused} tintColor={tintColor} />
         ),
       },
     },
