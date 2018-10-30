@@ -31,6 +31,7 @@ export default class extends React.Component {
     super(props);
     this.state = {
       userProfile: this.props.navigation.getParam('userProfile'),
+      friendship: null,
     };
   }
 
@@ -57,11 +58,71 @@ export default class extends React.Component {
           this.setState({ snackbarMessage: "Couldn't load user profile" });
         }
       );
+
+    firebase
+      .firestore()
+      .collection('friends')
+      .where('user_from', '==', firebase.auth().currentUser.id)
+      .where('user_to', '==', this.state.userProfile.id)
+      .limit(1)
+      .onSnapshot(querySnapshot => {
+        if (querySnapshot.empty) {
+          this.setState({ friendship: null });
+        } else {
+          this.setState({ friendship: querySnapshot.docs[0] });
+        }
+      });
   }
+
+  _addFriendRequest = () => {
+    firebase
+      .firestore()
+      .collection('friends')
+      .add({
+        user_from: firebase.auth().currentUser.id,
+        user_to: this.state.userProfile.id,
+        accepted: false,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      })
+      .catch(err => {
+        this.setState({
+          snackbarMessage: "Couldn't add friend.",
+        });
+      })
+      .then(() => {
+        this.setState({
+          snackbarMessage: 'Friend request sent.',
+        });
+      });
+  };
+
+  _deleteFriendRequest = () => {
+    this.state.friendship.ref
+      .delete()
+      .catch(err => {
+        this.setState({
+          snackbarMessage: "Couldn't cancel friend request.",
+        });
+      })
+      .then(() => {
+        this.setState({
+          snackbarMessage: 'Friend request cancelled.',
+        });
+      });
+  };
 
   _appbarDropdown = () => {
     // Display native dropdown menu
-    let menuActions = ['Add friend', 'Send message', 'Report or block'];
+    let friendAction = 'Add friend';
+    if (this.state.friendship) {
+      if (this.state.friendship.accepted) {
+        friendAction = 'Remove friend';
+      } else {
+        friendAction = 'Cancel friend request';
+      }
+    }
+
+    let menuActions = [friendAction, 'Send message', 'Report or block'];
     UIManager.showPopupMenu(
       findNodeHandle(this.refs.appbarAction),
       menuActions,
@@ -75,6 +136,18 @@ export default class extends React.Component {
         /* handle action */
         if (action === 'itemSelected') {
           if (index === 0) {
+            if (this.state.friendship) {
+              if (this.state.friendship.accepted) {
+                this._deleteFriendRequest();
+              } else {
+                this._deleteFriendRequest();
+              }
+            } else {
+              this._addFriendRequest();
+            }
+          } else if (index === 1) {
+            // TODO Handle send message
+          } else if (index === 2) {
             // TODO Handle report user
           }
         }
@@ -138,14 +211,33 @@ export default class extends React.Component {
 
   _userProfileActions = () => {
     if (this.state.userProfile) {
+      let friendButton = (
+        <Button
+          mode="contained"
+          style={CommonStyles.containerItem}
+          onPress={this._addFriendRequest}>
+          <Subheading style={{ color: '#ffffff' }}>Add friend</Subheading>
+        </Button>
+      );
+
+      if (this.state.friendship) {
+        if (this.state.friendship.accepted) {
+          friendButton = null;
+        } else {
+          friendButton = (
+            <Button
+              mode="contained"
+              style={CommonStyles.containerItem}
+              onPress={this._deleteFriendRequest}>
+              <Subheading style={{ color: '#ffffff' }}>Cancel friend request</Subheading>
+            </Button>
+          );
+        }
+      }
+
       return (
         <View>
-          <Button
-            mode="contained"
-            style={CommonStyles.containerItem}
-            onPress={() => console.log('TODO Add friend')}>
-            <Subheading style={{ color: '#ffffff' }}>Add friend</Subheading>
-          </Button>
+          {friendButton}
           <Button
             mode="contained"
             style={CommonStyles.containerItem}

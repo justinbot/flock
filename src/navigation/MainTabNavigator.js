@@ -23,7 +23,7 @@ export default createMaterialBottomTabNavigator(
       navigationOptions: {
         title: 'Messages',
         tabBarIcon: ({ focused, tintColor }) => (
-          <TabBarIcon name={'send'} focused={focused} tintColor={tintColor} />
+          <TabBarIcon name={'message-circle'} focused={focused} tintColor={tintColor} />
         ),
       },
     },
