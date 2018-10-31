@@ -3,7 +3,7 @@ import { Animated, Easing } from 'react-native';
 export const materialStandardEasing = Easing.bezier(0.4, 0.0, 0.2, 1);
 
 export const animationDefinitions = {
-  cardEnter: {
+  userEnter: {
     from: {
       opacity: 0,
       scaleY: 0,
@@ -11,6 +11,14 @@ export const animationDefinitions = {
     to: {
       opacity: 1,
       scaleY: 1,
+    },
+  },
+  cardEnter: {
+    from: {
+      opacity: 0,
+    },
+    to: {
+      opacity: 1,
     },
   },
 };
