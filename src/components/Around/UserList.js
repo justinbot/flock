@@ -18,7 +18,7 @@ export default class UserList extends React.Component {
     <UserItem
       userProfile={item}
       onPressItem={this.props.onPressItem}
-      animation="cardEnter"
+      animation="userEnter"
       duration={300}
       easing={materialStandardEasing}
       useNativeDriver

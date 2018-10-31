@@ -13,6 +13,13 @@ class UserItem extends React.PureComponent {
   };
 
   render() {
+    let userProfile = this.props.userProfile;
+
+    let avatarImageSource = require('src/assets/images/placeholder.png');
+    if (userProfile.get('avatar_url')) {
+      avatarImageSource = { uri: userProfile.get('avatar_url') };
+    }
+
     return (
       <Card
         onPress={this._onPress}
@@ -25,17 +32,19 @@ class UserItem extends React.PureComponent {
                 height: 100,
                 borderRadius: 50,
               }}
-              source={{ uri: this.props.userProfile.get('avatar_url') }}
+              source={avatarImageSource}
             />
           </Transition>
           <View style={{ flex: 1, marginLeft: theme.marginHorizontal }}>
-            <Transition shared={'displayName' + this.props.userProfile.id}>
+            <Transition shared={'displayName' + userProfile.id}>
               <Title numberOfLines={1} style={{ fontWeight: 'bold' }}>
-                {this.props.userProfile.get('display_name')}
+                {userProfile.get('display_name')}
               </Title>
             </Transition>
-            <Transition shared={'details' + this.props.userProfile.id}>
-              <Paragraph>{this.props.userProfile.get('details')}</Paragraph>
+            <Transition shared={'details' + userProfile.id}>
+              <Paragraph numberOfLines={1} style={{ color: theme.colors.disabled }}>
+                {userProfile.get('details')}
+              </Paragraph>
             </Transition>
           </View>
         </Card.Content>
