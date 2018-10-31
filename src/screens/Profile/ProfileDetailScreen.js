@@ -62,7 +62,7 @@ export default class extends React.Component {
     firebase
       .firestore()
       .collection('friends')
-      .where('user_from', '==', firebase.auth().currentUser.id)
+      .where('user_from', '==', firebase.auth().currentUser.uid)
       .where('user_to', '==', this.state.userProfile.id)
       .limit(1)
       .onSnapshot(querySnapshot => {
@@ -79,7 +79,7 @@ export default class extends React.Component {
       .firestore()
       .collection('friends')
       .add({
-        user_from: firebase.auth().currentUser.id,
+        user_from: firebase.auth().currentUser.uid,
         user_to: this.state.userProfile.id,
         accepted: false,
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
@@ -157,6 +157,10 @@ export default class extends React.Component {
 
   _userProfileContent = () => {
     if (this.state.userProfile) {
+      let avatarImageSource = require('src/assets/images/placeholder.png');
+      if (this.state.userProfile.get('avatar_url')) {
+        avatarImageSource = { uri: this.state.userProfile.get('avatar_url') };
+      }
       return (
         <Animatable.View animation="fadeIn" duration={300} useNativeDriver>
           <View style={CommonStyles.container}>
@@ -173,7 +177,7 @@ export default class extends React.Component {
                 ]}>
                 <Transition shared={'avatarImage' + this.state.userProfile.id}>
                   <Image
-                    source={{ uri: this.state.userProfile.get('avatar_url') }}
+                    source={avatarImageSource}
                     style={{ flex: 1, aspectRatio: 1, borderRadius: 20 }}
                     resizeMode="cover"
                   />
