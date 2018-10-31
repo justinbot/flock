@@ -42,6 +42,11 @@ export default class extends React.Component {
 
   _userProfileContent = () => {
     if (this.state.userProfile) {
+      let avatarImageSource = require('src/assets/images/placeholder.png');
+      if (this.state.userProfile.get('avatar_url')) {
+        avatarImageSource = { uri: this.state.userProfile.get('avatar_url') };
+      }
+
       return (
         <Animatable.View animation="fadeIn" duration={300} useNativeDriver>
           <View style={CommonStyles.container}>
@@ -58,7 +63,7 @@ export default class extends React.Component {
                 ]}>
                 <Transition shared={'avatarImage'}>
                   <Image
-                    source={{ uri: this.state.userProfile.get('avatar_url') }}
+                    source={avatarImageSource}
                     style={{ flex: 1, aspectRatio: 1, borderRadius: 20 }}
                     resizeMode="cover"
                   />

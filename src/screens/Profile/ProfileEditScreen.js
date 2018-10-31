@@ -1,12 +1,7 @@
 import React from 'react';
 import { BackHandler, Image, ImageEditor, Keyboard, View } from 'react-native';
 import { ImagePicker } from 'expo';
-import {
-  Appbar,
-  Button,
-  Snackbar,
-  Surface,
-} from 'react-native-paper';
+import { Appbar, Button, Snackbar, Surface } from 'react-native-paper';
 import { Transition } from 'react-navigation-fluid-transitions';
 import t from 'src/forms';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -206,6 +201,10 @@ export default class extends React.Component {
     const navigation = this.props.navigation;
 
     let Form = t.form.Form;
+    let avatarImageSource = require('src/assets/images/placeholder.png');
+    if (this.state.userProfileFormValues.avatar_url) {
+      avatarImageSource = { uri: this.state.userProfileFormValues.avatar_url };
+    }
 
     return (
       <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
@@ -233,7 +232,7 @@ export default class extends React.Component {
                 <Transition shared={'avatarImage'}>
                   {/*<Card style={[CommonStyles.containerItem, { overflow: 'hidden' }]}>*/}
                   <Image
-                    source={{ uri: this.state.userProfileFormValues.avatar_url }}
+                    source={avatarImageSource}
                     style={{ flex: 1, aspectRatio: 1, borderRadius: 20 }}
                     resizeMode="cover"
                   />
@@ -255,25 +254,6 @@ export default class extends React.Component {
                 onChange={values => this.setState({ userProfileFormValues: values })}
               />
             </View>
-            {/*<TextInput*/}
-            {/*style={CommonStyles.containerItem}*/}
-            {/*label="Name"*/}
-            {/*mode="outlined"*/}
-            {/*maxLength={20}*/}
-            {/*value={this.state.formDisplayName}*/}
-            {/*onChangeText={formDisplayName => this.setState({ formDisplayName })}*/}
-            {/*/>*/}
-            {/*<TextInput*/}
-            {/*style={CommonStyles.containerItem}*/}
-            {/*label="Details"*/}
-            {/*placeholder="Add some details"*/}
-            {/*textAlignVertical="top"*/}
-            {/*mode="outlined"*/}
-            {/*multiline*/}
-            {/*numberOfLines={4}*/}
-            {/*value={this.state.formDetails}*/}
-            {/*onChangeText={formDetails => this.setState({ formDetails })}*/}
-            {/*/>*/}
           </View>
         </KeyboardAwareScrollView>
         <Snackbar

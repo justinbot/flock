@@ -11,9 +11,10 @@ export default {
     primary: '#50b38f',
     primaryDark: '#138362',
     primaryLight: '#83e6bf',
-    secondary: '#ef957d',
-    secondaryDark: '#cbba83',
-    secondaryLight: '#ffffe5',
+    accent: '#3535aa',
+    // secondary: '#ef957d',
+    // secondaryDark: '#cbba83',
+    // secondaryLight: '#ffffe5',
     // primary
     // accent
     // background

@@ -1,6 +1,22 @@
 import React from 'react';
-import { ActivityIndicator, Image, ScrollView, View } from 'react-native';
-import { Appbar, Button, Divider, Paragraph, Snackbar, Subheading, Surface, Text } from 'react-native-paper';
+import {
+  ActivityIndicator,
+  Image,
+  findNodeHandle,
+  ScrollView,
+  UIManager,
+  View,
+} from 'react-native';
+import {
+  Appbar,
+  Button,
+  Divider,
+  Paragraph,
+  Snackbar,
+  Subheading,
+  Surface,
+  Text,
+} from 'react-native-paper';
 import * as Animatable from 'react-native-animatable';
 import { Transition } from 'react-navigation-fluid-transitions';
 
@@ -15,6 +31,7 @@ export default class extends React.Component {
     super(props);
     this.state = {
       userProfile: this.props.navigation.getParam('userProfile'),
+      friendship: null,
     };
   }
 
@@ -41,10 +58,145 @@ export default class extends React.Component {
           this.setState({ snackbarMessage: "Couldn't load user profile" });
         }
       );
+
+    firebase
+      .firestore()
+      .collection('friends')
+      .where('user_from', '==', firebase.auth().currentUser.uid)
+      .where('user_to', '==', this.state.userProfile.id)
+      .limit(1)
+      .onSnapshot(querySnapshot => {
+        if (querySnapshot.empty) {
+          // Try getting friendship to rather than from
+          firebase
+            .firestore()
+            .collection('friends')
+            .where('user_to', '==', firebase.auth().currentUser.uid)
+            .where('user_from', '==', this.state.userProfile.id)
+            .limit(1)
+            .onSnapshot(querySnapshot => {
+              if (querySnapshot.empty) {
+                this.setState({ friendship: null });
+              } else {
+                this.setState({ friendship: querySnapshot.docs[0] });
+              }
+            });
+        } else {
+          this.setState({ friendship: querySnapshot.docs[0] });
+        }
+      });
   }
+
+  _addFriendRequest = () => {
+    // TODO Disallow if a friendship already exists
+    firebase
+      .firestore()
+      .collection('friends')
+      .add({
+        user_from: firebase.auth().currentUser.uid,
+        user_to: this.state.userProfile.id,
+        accepted: false,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      })
+      .catch(err => {
+        // TODO log to error reporting
+        console.warn(err);
+        this.setState({
+          snackbarMessage: "Couldn't add friend.",
+        });
+      })
+      .then(() => {
+        this.setState({
+          snackbarMessage: 'Friend request sent.',
+        });
+      });
+  };
+
+  _deleteFriendRequest = () => {
+    this.state.friendship.ref
+      .delete()
+      .catch(err => {
+        this.setState({
+          snackbarMessage: "Couldn't remove friend.",
+        });
+      })
+      .then(() => {
+        this.setState({
+          snackbarMessage: 'Friend removed.',
+        });
+      });
+  };
+
+  _acceptFriendRequest = () => {
+    this.state.friendship.ref.set({ accepted: true }, { merge: true }).catch(err => {
+      // TODO log to error reporting
+      console.warn(err);
+      this.setState({
+        snackbarMessage: "Couldn't accept friend request.",
+      });
+    });
+  };
+
+  _appbarDropdown = () => {
+    // Display native dropdown menu
+    // TODO if a friendship exists show 'accept request' instead
+    let friendAction = 'Add friend';
+    if (this.state.friendship) {
+      if (this.state.friendship.get('accepted')) {
+        friendAction = 'Remove friend';
+      } else {
+        if (this.state.friendship.get('user_from') === firebase.auth().currentUser.uid) {
+          friendAction = 'Cancel friend request';
+        } else {
+          friendAction = 'Confirm friend';
+        }
+      }
+    }
+
+    let menuActions = [friendAction, 'Send message', 'Report or block'];
+    UIManager.showPopupMenu(
+      findNodeHandle(this.refs.appbarAction),
+      menuActions,
+      err => {
+        // TODO log to error reporting
+        console.warn(err);
+      },
+      (
+        action, // "itemSelected", "dismissed"
+        index // index of item that's selected
+      ) => {
+        /* handle action */
+        if (action === 'itemSelected') {
+          if (index === 0) {
+            if (this.state.friendship) {
+              if (this.state.friendship.get('accepted')) {
+                this._deleteFriendRequest();
+              } else {
+                if (this.state.friendship.get('user_from') === firebase.auth().currentUser.uid) {
+                  this._deleteFriendRequest();
+                } else {
+                  this._acceptFriendRequest();
+                }
+              }
+            } else {
+              this._addFriendRequest();
+            }
+          } else if (index === 1) {
+            // TODO Handle send message
+          } else if (index === 2) {
+            // TODO Handle report user
+          }
+        }
+      }
+    );
+  };
 
   _userProfileContent = () => {
     if (this.state.userProfile) {
+      let avatarImageSource = require('src/assets/images/placeholder.png');
+      if (this.state.userProfile.get('avatar_url')) {
+        avatarImageSource = { uri: this.state.userProfile.get('avatar_url') };
+      }
       return (
         <Animatable.View animation="fadeIn" duration={300} useNativeDriver>
           <View style={CommonStyles.container}>
@@ -61,7 +213,7 @@ export default class extends React.Component {
                 ]}>
                 <Transition shared={'avatarImage' + this.state.userProfile.id}>
                   <Image
-                    source={{ uri: this.state.userProfile.get('avatar_url') }}
+                    source={avatarImageSource}
                     style={{ flex: 1, aspectRatio: 1, borderRadius: 20 }}
                     resizeMode="cover"
                   />
@@ -99,13 +251,51 @@ export default class extends React.Component {
 
   _userProfileActions = () => {
     if (this.state.userProfile) {
-      return (
+      let friendButton = (
         <Button
           mode="contained"
           style={CommonStyles.containerItem}
-          onPress={this._chooseAvatarImageAsync}>
-          <Subheading style={{ color: '#ffffff' }}>Send message</Subheading>
+          onPress={this._addFriendRequest}>
+          <Subheading style={{ color: '#ffffff' }}>Add friend</Subheading>
         </Button>
+      );
+
+      if (this.state.friendship) {
+        if (this.state.friendship.get('accepted')) {
+          friendButton = null;
+        } else {
+          if (this.state.friendship.get('user_from') === firebase.auth().currentUser.uid) {
+            friendButton = (
+              <Button
+                mode="contained"
+                style={CommonStyles.containerItem}
+                onPress={this._deleteFriendRequest}>
+                <Subheading style={{ color: '#ffffff' }}>Cancel friend request</Subheading>
+              </Button>
+            );
+          } else {
+            friendButton = (
+              <Button
+                mode="contained"
+                style={CommonStyles.containerItem}
+                onPress={this._acceptFriendRequest}>
+                <Subheading style={{ color: '#ffffff' }}>Confirm friend</Subheading>
+              </Button>
+            );
+          }
+        }
+      }
+
+      return (
+        <View>
+          {friendButton}
+          <Button
+            mode="contained"
+            style={CommonStyles.containerItem}
+            onPress={() => console.log('TODO Message')}>
+            <Subheading style={{ color: '#ffffff' }}>Message</Subheading>
+          </Button>
+        </View>
       );
     } else {
       // TODO loading
@@ -123,7 +313,7 @@ export default class extends React.Component {
             <Appbar.Header statusBarHeight={0} style={{ backgroundColor: theme.colors.surface }}>
               <Appbar.BackAction color={theme.colors.primary} onPress={() => navigation.goBack()} />
               <Appbar.Content />
-              <Appbar.Action icon="more-vert" onPress={this._onMore} />
+              <Appbar.Action ref="appbarAction" icon="more-vert" onPress={this._appbarDropdown} />
             </Appbar.Header>
           </View>
         </Transition>

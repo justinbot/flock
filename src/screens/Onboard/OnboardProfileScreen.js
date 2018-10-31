@@ -153,6 +153,10 @@ export default class extends React.Component {
     const navigation = this.props.navigation;
 
     let Form = t.form.Form;
+    let avatarImageSource = require('src/assets/images/placeholder.png');
+    if (this.state.userProfileFormValues.avatar_url) {
+      avatarImageSource = { uri: this.state.userProfileFormValues.avatar_url };
+    }
 
     return (
       <Surface style={{ flex: 1 }}>
@@ -175,7 +179,7 @@ export default class extends React.Component {
                 <Transition shared={'avatarImage'}>
                   {/*<Card style={[CommonStyles.containerItem, { overflow: 'hidden' }]}>*/}
                   <Image
-                    source={{ uri: this.state.userProfileFormValues.avatar_url }}
+                    source={avatarImageSource}
                     style={{ flex: 1, aspectRatio: 1, borderRadius: 20 }}
                     resizeMode="cover"
                   />
