@@ -67,7 +67,20 @@ export default class extends React.Component {
       .limit(1)
       .onSnapshot(querySnapshot => {
         if (querySnapshot.empty) {
-          this.setState({ friendship: null });
+          // Try getting friendship to rather than from
+          firebase
+            .firestore()
+            .collection('friends')
+            .where('user_to', '==', firebase.auth().currentUser.uid)
+            .where('user_from', '==', this.state.userProfile.id)
+            .limit(1)
+            .onSnapshot(querySnapshot => {
+              if (querySnapshot.empty) {
+                this.setState({ friendship: null });
+              } else {
+                this.setState({ friendship: querySnapshot.docs[0] });
+              }
+            });
         } else {
           this.setState({ friendship: querySnapshot.docs[0] });
         }
@@ -75,6 +88,7 @@ export default class extends React.Component {
   }
 
   _addFriendRequest = () => {
+    // TODO Disallow if a friendship already exists
     firebase
       .firestore()
       .collection('friends')
@@ -85,6 +99,8 @@ export default class extends React.Component {
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
       })
       .catch(err => {
+        // TODO log to error reporting
+        console.warn(err);
         this.setState({
           snackbarMessage: "Couldn't add friend.",
         });
@@ -101,24 +117,39 @@ export default class extends React.Component {
       .delete()
       .catch(err => {
         this.setState({
-          snackbarMessage: "Couldn't cancel friend request.",
+          snackbarMessage: "Couldn't remove friend.",
         });
       })
       .then(() => {
         this.setState({
-          snackbarMessage: 'Friend request cancelled.',
+          snackbarMessage: 'Friend removed.',
         });
       });
   };
 
+  _acceptFriendRequest = () => {
+    this.state.friendship.ref.set({ accepted: true }, { merge: true }).catch(err => {
+      // TODO log to error reporting
+      console.warn(err);
+      this.setState({
+        snackbarMessage: "Couldn't accept friend request.",
+      });
+    });
+  };
+
   _appbarDropdown = () => {
     // Display native dropdown menu
+    // TODO if a friendship exists show 'accept request' instead
     let friendAction = 'Add friend';
     if (this.state.friendship) {
-      if (this.state.friendship.accepted) {
+      if (this.state.friendship.get('accepted')) {
         friendAction = 'Remove friend';
       } else {
-        friendAction = 'Cancel friend request';
+        if (this.state.friendship.get('user_from') === firebase.auth().currentUser.uid) {
+          friendAction = 'Cancel friend request';
+        } else {
+          friendAction = 'Confirm friend';
+        }
       }
     }
 
@@ -126,8 +157,9 @@ export default class extends React.Component {
     UIManager.showPopupMenu(
       findNodeHandle(this.refs.appbarAction),
       menuActions,
-      error => {
-        // TODO Log to error reporting
+      err => {
+        // TODO log to error reporting
+        console.warn(err);
       },
       (
         action, // "itemSelected", "dismissed"
@@ -137,10 +169,14 @@ export default class extends React.Component {
         if (action === 'itemSelected') {
           if (index === 0) {
             if (this.state.friendship) {
-              if (this.state.friendship.accepted) {
+              if (this.state.friendship.get('accepted')) {
                 this._deleteFriendRequest();
               } else {
-                this._deleteFriendRequest();
+                if (this.state.friendship.get('user_from') === firebase.auth().currentUser.uid) {
+                  this._deleteFriendRequest();
+                } else {
+                  this._acceptFriendRequest();
+                }
               }
             } else {
               this._addFriendRequest();
@@ -225,17 +261,28 @@ export default class extends React.Component {
       );
 
       if (this.state.friendship) {
-        if (this.state.friendship.accepted) {
+        if (this.state.friendship.get('accepted')) {
           friendButton = null;
         } else {
-          friendButton = (
-            <Button
-              mode="contained"
-              style={CommonStyles.containerItem}
-              onPress={this._deleteFriendRequest}>
-              <Subheading style={{ color: '#ffffff' }}>Cancel friend request</Subheading>
-            </Button>
-          );
+          if (this.state.friendship.get('user_from') === firebase.auth().currentUser.uid) {
+            friendButton = (
+              <Button
+                mode="contained"
+                style={CommonStyles.containerItem}
+                onPress={this._deleteFriendRequest}>
+                <Subheading style={{ color: '#ffffff' }}>Cancel friend request</Subheading>
+              </Button>
+            );
+          } else {
+            friendButton = (
+              <Button
+                mode="contained"
+                style={CommonStyles.containerItem}
+                onPress={this._acceptFriendRequest}>
+                <Subheading style={{ color: '#ffffff' }}>Confirm friend</Subheading>
+              </Button>
+            );
+          }
         }
       }
 
