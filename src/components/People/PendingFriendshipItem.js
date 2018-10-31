@@ -1,6 +1,6 @@
 import React from 'react';
 import { Image, StyleSheet, View } from 'react-native';
-import { Button, Card, Paragraph, Subheading, Text, Title } from 'react-native-paper';
+import { Button, Card, Text, Title } from 'react-native-paper';
 import * as Animatable from 'react-native-animatable';
 import { Transition } from 'react-navigation-fluid-transitions';
 
@@ -9,13 +9,23 @@ import CommonStyles from 'src/styles/CommonStyles';
 
 class PendingFriendshipItem extends React.PureComponent {
   _onPress = () => {
-    this.props.onPressItem(this.props.userProfile);
+    this.props.onPressItem(this.props.item.userProfile);
+  };
+
+  _onAccept = () => {
+    this.props.onAcceptItem(this.props.item.friendship);
+  };
+
+  _onDelete = () => {
+    this.props.onDeleteItem(this.props.item.friendship);
   };
 
   render() {
+    let userProfile = this.props.item.userProfile;
+
     let avatarImageSource = require('src/assets/images/placeholder.png');
-    if (this.props.userProfile.get('avatar_url')) {
-      avatarImageSource = { uri: this.props.userProfile.get('avatar_url') };
+    if (userProfile.get('avatar_url')) {
+      avatarImageSource = { uri: userProfile.get('avatar_url') };
     }
 
     return (
@@ -24,7 +34,7 @@ class PendingFriendshipItem extends React.PureComponent {
         onPress={this._onPress}
         style={[CommonStyles.containerItem, { marginTop: 8, marginBottom: 14 }, this.props.style]}>
         <Card.Content style={[this.props.style, { flexDirection: 'row' }]}>
-          <Transition shared={'avatarImage' + this.props.userProfile.id}>
+          <Transition shared={'avatarImage' + userProfile.id}>
             <Image
               style={{
                 width: 52,
@@ -35,16 +45,20 @@ class PendingFriendshipItem extends React.PureComponent {
             />
           </Transition>
           <View style={{ flex: 1, marginLeft: theme.marginHorizontal }}>
-            <Transition shared={'displayName' + this.props.userProfile.id}>
+            <Transition shared={'displayName' + userProfile.id}>
               <Title numberOfLines={1} style={{ fontWeight: 'bold' }}>
-                {this.props.userProfile.get('display_name')}
+                {userProfile.get('display_name')}
               </Title>
             </Transition>
           </View>
         </Card.Content>
         <Card.Actions style={{ justifyContent: 'flex-end' }}>
-          <Button>Delete</Button>
-          <Button>Confirm</Button>
+          <Button onPress={this._onDelete}>
+            <Text style={{ color: theme.colors.accent }}>Delete</Text>
+          </Button>
+          <Button onPress={this._onAccept}>
+            <Text style={{ color: theme.colors.accent }}>Confirm</Text>
+          </Button>
         </Card.Actions>
       </Card>
     );
