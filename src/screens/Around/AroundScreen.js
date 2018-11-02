@@ -14,7 +14,8 @@ import theme from 'src/constants/Theme';
 import CommonStyles from 'src/styles/CommonStyles';
 import UserList from 'src/components/Around/UserList';
 
-const nearbyAPI = new NearbyAPI();
+// Pass true for BLE only
+const nearbyAPI = new NearbyAPI(true);
 
 export default class AroundScreen extends React.Component {
   constructor(props) {
@@ -43,6 +44,9 @@ export default class AroundScreen extends React.Component {
       });
       // Subscribe once we are connected
       this._nearbySubscribe();
+
+      this._handleMessageFound('rMpR9i8VuiV03whFjAPCXlPLj3i2'); // Test User 1
+      this._handleMessageFound('NGIX2VWzOuXFZMRnbXayYzKvli72'); // Test User 2
     });
 
     nearbyAPI.onDisconnected(message => {
@@ -98,6 +102,7 @@ export default class AroundScreen extends React.Component {
       console.log('Lost message: ' + message);
       this._handleMessageLost(message);
     });
+
     this._verifyNearbyState();
   }
 
@@ -329,7 +334,7 @@ export default class AroundScreen extends React.Component {
       <View style={{ flex: 1, flexDirection: 'column', backgroundColor: theme.colors.background }}>
         <Appbar.Header style={{ backgroundColor: theme.colors.surface }} statusBarHeight={0}>
           <Appbar.Content title={this._appbarTitle()} />
-          <Transition appear="right" disappear="right">
+          <Transition appear="right" disappear="right" delay>
             <Switch
               color={theme.colors.primary}
               value={this.state.userVisible}
