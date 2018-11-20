@@ -34,7 +34,7 @@ class PendingFriendshipItem extends React.PureComponent {
         onPress={this._onPress}
         style={[CommonStyles.containerItem, { marginTop: 8, marginBottom: 14 }, this.props.style]}>
         <Card.Content style={[this.props.style, { flexDirection: 'row' }]}>
-          <Transition shared={'avatarImage' + userProfile.id}>
+          {/*<Transition shared={'avatarImage' + userProfile.id}>*/}
             <Image
               style={{
                 width: 52,
@@ -43,13 +43,13 @@ class PendingFriendshipItem extends React.PureComponent {
               }}
               source={avatarImageSource}
             />
-          </Transition>
+          {/*</Transition>*/}
           <View style={{ flex: 1, marginLeft: theme.marginHorizontal }}>
-            <Transition shared={'displayName' + userProfile.id}>
+            {/*<Transition shared={'displayName' + userProfile.id}>*/}
               <Title numberOfLines={1} style={{ fontWeight: 'bold' }}>
                 {userProfile.get('display_name')}
               </Title>
-            </Transition>
+            {/*</Transition>*/}
           </View>
         </Card.Content>
         <Card.Actions style={{ justifyContent: 'flex-end' }}>

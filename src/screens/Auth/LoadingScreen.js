@@ -27,11 +27,9 @@ export default class LoadingScreen extends React.Component {
           .get()
           .then(userProfile => {
             if (userProfile.exists) {
-              console.log('use hasprofile');
               this.props.navigation.navigate('AppStack');
             } else {
               // User missing profile
-              console.log('use has no profile');
               this.props.navigation.navigate('OnboardStack');
             }
           })
