@@ -2,7 +2,7 @@
 
 Flock is a hyper-local social media app which uses location and mutual friends to help connect people.
 
-# Sections
+# Table of contents
 
-[Getting Started](getting_started.md)
-[Building an APK](building.md)
+* [Getting Started](getting_started.md)
+* [Building an APK](building.md)
