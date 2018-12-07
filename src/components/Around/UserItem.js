@@ -46,6 +46,9 @@ class UserItem extends React.PureComponent {
                 {userProfile.get('details')}
               </Paragraph>
             </Transition>
+            <Transition shared={'mutualFriends' + userProfile.id}>
+              <Text>0 mutual friends</Text>
+            </Transition>
           </View>
         </Card.Content>
       </Card>
