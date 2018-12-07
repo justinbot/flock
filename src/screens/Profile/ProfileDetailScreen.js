@@ -32,6 +32,7 @@ export default class extends React.Component {
     this.state = {
       userProfile: this.props.navigation.getParam('userProfile'),
       friendship: null,
+      mutualFriendsCount: 0,
     };
   }
 
@@ -44,6 +45,7 @@ export default class extends React.Component {
         userProfile => {
           if (userProfile.exists) {
             this.setState({ userProfile });
+            this._fetchMutualFriendsAsync();
           } else {
             // TODO User missing profile
             this.setState({
@@ -86,6 +88,59 @@ export default class extends React.Component {
         }
       });
   }
+
+  _fetchMutualFriendsAsync = async () => {
+    // TODO Make queries at the same time
+    let usFriendshipsTo = await firebase
+      .firestore()
+      .collection('friends')
+      .where('user_to', '==', firebase.auth().currentUser.uid)
+      .where('accepted', '==', true)
+      .get();
+    console.log(usFriendshipsTo);
+
+    let usFriendshipsFrom = await firebase
+      .firestore()
+      .collection('friends')
+      .where('user_from', '==', firebase.auth().currentUser.uid)
+      .where('accepted', '==', true)
+      .get();
+
+    let usFriends = [
+      ...usFriendshipsFrom.docs.map(f => f.user_to),
+      ...usFriendshipsTo.docs.map(f => f.user_from),
+    ];
+    console.log(usFriends);
+
+    let themFriendshipsTo = await firebase
+      .firestore()
+      .collection('friends')
+      .where('user_to', '==', this.state.userProfile.id)
+      .where('accepted', '==', true)
+      .get();
+
+    let themFriendshipsFrom = await firebase
+      .firestore()
+      .collection('friends')
+      .where('user_from', '==', this.state.userProfile.id)
+      .where('accepted', '==', true)
+      .get();
+
+    let themFriends = [
+      ...themFriendshipsFrom.docs.map(f => f.user_to),
+      ...themFriendshipsTo.docs.map(f => f.user_from),
+    ];
+    console.log(themFriends);
+
+    // Determine mutual friends
+    let mutualFriendships = usFriends.filter(f => {
+      return themFriends.indexOf(f) > -1;
+    });
+
+    this.setState({
+      mutualFriendsCount: mutualFriendships.length,
+    });
+  };
 
   _addFriendRequest = () => {
     // TODO Disallow if a friendship already exists
@@ -230,6 +285,9 @@ export default class extends React.Component {
                   }}>
                   {this.state.userProfile.get('display_name')}
                 </Text>
+              </Transition>
+              <Transition shared={'mutualFriends' + this.state.userProfile.id}>
+                <Text>{this.state.mutualFriendsCount} mutual friends</Text>
               </Transition>
               <Transition shared={'details' + this.state.userProfile.id}>
                 <Paragraph style={{ marginVertical: theme.marginVertical }}>
